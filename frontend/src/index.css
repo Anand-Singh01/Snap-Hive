@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PAGES */
+
+/* LoginPage.tsx */
+.login-section {
+  @apply overflow-hidden relative h-screen w-screen text-black flex justify-center items-center;
+}
+.login-form-container {
+  @apply relative -translate-y-[-50px] shadow-2xl shadow-gray-600 md:w-[350px] w-[300px] h-[500px] max-w-full max-h-full flex flex-col items-center bg-white md:rounded-r-[10px] md:rounded-l-none rounded-[10px];
+}
+.login-form-container img {
+  @apply opacity-0 scale-50 hidden md:block absolute w-[80px] left-[-40px] top-[50%] translate-y-[-50%];
+}
+.login-form-container h1 {
+  @apply my-[35px] text-[20px] font-semibold;
+}
+
+
+
+
+/* COMPONENTS */
+
+/* WelcomeDiv.tsx */
+.info-form-container {
+  @apply -translate-y-[50px] shadow-2xl shadow-gray-600 hidden md:flex flex-col justify-center h-[500px] w-[350px] max-w-full md:rounded-l-[10px] max-h-full bg-[#90c7fa];
+}
+.info-form-container h1 {
+  @apply text-white text-[25px] p-[13px] font-semibold;
+}
+.info-form-container h1 span {
+  @apply text-[#362BD0];
+}
+.info-form-container p {
+  @apply pl-[20px] w-[250px] italic font-light;
+}
+
+/* BackgroundImage.tsx */
+.img-container{
+  @apply opacity-0 absolute z-[-1] h-screen w-screen scale-110;
+}
+
+/* LoginForm.tsx */
+.login-form {
+  @apply flex flex-col items-center;
+}
+.input-container {
+  @apply mb-[17px];
+}
+.btn-div {
+  @apply text-center;
+}
+.signup-text {
+  @apply mt-[0.5rem];
+}
+.signup-text a {
+  @apply text-blue-700 cursor-pointer;
+}
+
+/* InputField.tsx */
+.inputDiv {
+  @apply flex flex-col;
+}
+.inputDiv input {
+  @apply bg-[#EDEDED] p-[0.5rem] w-[222px];
+}
+.btn {
+  @apply bg-[#4B6FFF] w-[200px] p-[8px] rounded-[15px] text-white;
+}
+.btn-guest {
+  @apply bg-black w-[200px] p-[8px] rounded-[15px] text-white;
+}
+.error-span {
+  @apply text-red-400;
+}
