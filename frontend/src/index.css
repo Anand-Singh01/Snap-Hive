@@ -9,7 +9,7 @@
   @apply overflow-hidden relative h-screen w-screen text-black flex justify-center items-center;
 }
 .login-form-container {
-  @apply relative -translate-y-[-50px] shadow-2xl shadow-gray-600 md:w-[350px] w-[300px] h-[500px] max-w-full max-h-full flex flex-col items-center bg-white md:rounded-r-[10px] md:rounded-l-none rounded-[10px];
+  @apply relative -translate-y-[-50px] shadow-2xl shadow-gray-600 md:w-[350px] w-[300px] h-[32rem] max-w-full max-h-full flex flex-col items-center bg-white md:rounded-r-[10px] md:rounded-l-none rounded-[10px];
 }
 .login-form-container img {
   @apply opacity-0 scale-50 hidden md:block absolute w-[80px] left-[-40px] top-[50%] translate-y-[-50%];
@@ -17,9 +17,6 @@
 .login-form-container h1 {
   @apply my-[35px] text-[20px] font-semibold;
 }
-
-
-
 
 /* COMPONENTS */
 
@@ -38,7 +35,7 @@
 }
 
 /* BackgroundImage.tsx */
-.img-container{
+.img-container {
   @apply opacity-0 absolute z-[-1] h-screen w-screen scale-110;
 }
 
@@ -50,7 +47,7 @@
   @apply mb-[17px];
 }
 .btn-div {
-  @apply text-center;
+  @apply text-center mt-[1rem];
 }
 .signup-text {
   @apply mt-[0.5rem];
@@ -61,7 +58,7 @@
 
 /* InputField.tsx */
 .inputDiv {
-  @apply flex flex-col;
+  @apply flex flex-col relative w-full;
 }
 .inputDiv input {
   @apply bg-[#EDEDED] p-[0.5rem] w-[222px];

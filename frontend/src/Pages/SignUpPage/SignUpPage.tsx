@@ -1,7 +1,7 @@
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import bow from "../../assets/images/bow.png";
-import pattern from "../../assets/images/patern.jpg";
+import pattern from "../../assets/images/pattern2.jpg";
 import BackgroundImage from "../../components/BackgroundImage";
 import SignUpForm from "../../components/SignUpForm";
 import WelcomeDiv from "../../components/WelcomeDiv";

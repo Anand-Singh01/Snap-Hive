@@ -1,6 +1,18 @@
 import { Router } from "express";
-import { addUser } from '../controllers/user-controller';
-
+import {
+    authStatus,
+    userLogin,
+    userSignUp,
+} from "../controllers/user-controller";
+import { loginValidation, signUpValidation } from "../middleware/index";
+import { verifyToken } from "../util/token";
 export const userRoutes = Router();
 
-userRoutes.post('/addUser', addUser);
+// /user/login
+userRoutes.post("/login", loginValidation, userLogin);
+
+// /user/signUp
+userRoutes.post("/signUp", signUpValidation, userSignUp);
+
+// /user/auth-status
+userRoutes.get("/auth-status", verifyToken, authStatus);

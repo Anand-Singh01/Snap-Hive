@@ -18,5 +18,4 @@ const WelcomeDiv = () => {
     </div>
   );
 };
-
 export default WelcomeDiv;
