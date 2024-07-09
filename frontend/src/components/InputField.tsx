@@ -31,7 +31,7 @@ const InputField: FC<InputProps> = ({
         name={name}
       />
       {errors[name] && errors[name].message && (
-        <span className="error-span">{errors[name].message.toString()}</span>
+        <span className="error-span absolute w-full bottom-[-25px]">{errors[name].message.toString()}</span>
       )}
     </div>
   );

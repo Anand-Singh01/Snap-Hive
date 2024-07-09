@@ -10,22 +10,22 @@ export const validationRules = {
     required: "Password is required.",
     minLength: {
       value: 5,
-      message: "Password must be 5-20 characters long.",
+      message: "Password: 5-20 characters.",
     },
     maxLength: {
       value: 20,
-      message: "Password must be 5-20 characters long.",
+      message: "Password: 5-20 character.",
     },
   },
   username: {
     required: "Username is required.",
     minLength: {
       value: 2,
-      message: "Username must be 2-20 characters long.",
+      message: "Username: 2-20 characters.",
     },
     maxLength: {
       value: 20,
-      message: "Username must be 2-20 characters long.",
+      message: "Username: 2-20 characters.",
     },
   },
 };

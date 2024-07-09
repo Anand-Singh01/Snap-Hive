@@ -1,15 +1,41 @@
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../state/hooks";
+import { loginUser } from "../utils/api-communicator";
+import { ILoginData } from "../utils/interfaces";
 import { validationRules } from "../utils/validation";
 import Button from "./Button";
 import InputField from "./InputField";
+import Loader from "./Loader";
 
 const LoginForm = () => {
-  const methods = useForm();
+  const methods = useForm<ILoginData>();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = (data) => {};
-  const [signIn_click, setSignIn_Click] = useState(false);
+  const onSubmit = async (data: ILoginData) => {
+    const result = await dispatch(loginUser(data));
+    if (loginUser.pending.match(result)) {
+      setIsLoading(true);
+    }
+    if (loginUser.fulfilled.match(result)) {
+      setIsLoading(false);
+      navigate("/");
+    }
+    if (loginUser.rejected.match(result)) {
+      setIsLoading(false);
+      if (result.payload?.error && result.payload.status) {
+        const { error, status } = result.payload;
+        if (status === 401 && error != null && typeof error === "object") {
+          alert(error.msg);
+        }
+      } else {
+        alert("an error occurred please try again.");
+      }
+    }
+  };
 
   return (
     <FormProvider {...methods}>
@@ -33,19 +59,11 @@ const LoginForm = () => {
           />
         </div>
         <div className="btn-div">
-          <Button
-            onClick={() => setSignIn_Click(true)}
-            type="submit"
-            className="btn"
-          >
-            Sign in
+          <Button type="submit" className="btn">
+            {isLoading ? <Loader /> : "Sign in"}
           </Button>
           <p>OR</p>
-          <Button
-            onClick={() => setSignIn_Click(true)}
-            type="submit"
-            className="btn-guest"
-          >
+          <Button type="submit" className="btn-guest">
             Explore as Guest
           </Button>
 

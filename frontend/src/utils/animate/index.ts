@@ -17,3 +17,11 @@ export const fade_zoom = (className: string) => {
     duration: 1,
   });
 };
+export const zoom = (className: string) => {
+  gsap.to(className, {
+    opacity: 1,
+    scale: 2,
+    ease: "circ.out",
+    duration: 1,
+  });
+};
