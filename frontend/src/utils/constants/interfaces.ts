@@ -13,26 +13,31 @@ export interface ISignUpData {
 }
 export interface ICurrentUser {
   username: string | null;
+  name: string | null;
   email: string | null;
   imageUrl: string | null;
 }
 
-export interface IErrorState{
+export interface IErrorState {
   errorMessage: { msg: string } | string | null;
-  status: number | null
+  status: number | null;
 }
 
 export interface IUserState {
   user: ICurrentUser;
 }
 
+export interface ICurrPage {
+  name: "Home" | "Explore" | "People" | "Saved" | "Create Post";
+}
+
 export interface ILoginResponse extends ICurrentUser {}
 export interface ISignUpResponse extends ILoginResponse {}
 
 export interface IErrorResponse {
-  error: { msg: string } ;
-  status: number
+  error: { msg: string };
+  status: number;
 }
-export interface ILoader{
-  isLoading:boolean,
+export interface ILoader {
+  isLoading: boolean;
 }

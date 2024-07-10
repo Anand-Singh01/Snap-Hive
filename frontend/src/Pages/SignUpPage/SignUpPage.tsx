@@ -21,7 +21,7 @@ const SignUpPage = () => {
         <div>
           <div className="login-form-container">
             <img ref={imgRef} src={bow} alt="" />
-            <h1>Sign up to your account</h1>
+            <h1>Create a new account</h1>
             <SignUpForm />
           </div>
         </div>

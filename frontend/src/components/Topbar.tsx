@@ -15,7 +15,7 @@ const Topbar = () => {
           <img className="sm:w-[2.5rem] w-[2rem]" src={logo} alt="app logo" />
           <p className="sm:text-lg text-md font-bold">SnapHive</p>
         </div>
-        <div className="logout-logo flex items-center gap-[3rem]">
+        <div className="md:hidden logout-logo flex items-center gap-[3rem]">
           <Logout/>
           <ProfileLogo />
         </div>

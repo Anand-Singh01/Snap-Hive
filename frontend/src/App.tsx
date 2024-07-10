@@ -16,14 +16,14 @@ function App() {
     if (currPath != "/login" && currPath != "/signUp") {
       const userInfo = localStorage.getItem("user-info");
       if (userInfo) {
-        const { username, email, imageUrl } = JSON.parse(userInfo);
-        dispatch(updateUserInfo({ username, email, imageUrl }));
+        const { username, email, imageUrl, name } = JSON.parse(userInfo);
+        dispatch(updateUserInfo({ username, email, imageUrl, name }));
       } else {
         navigate("/login");
       }
     }
   }, [dispatch, navigate, currPath]);
-  
+
   return (
     <>
       <Routes>
@@ -31,6 +31,7 @@ function App() {
         <Route path="/signUp" element={<SignUpPage />} />
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/Explore" element={<HomePage />} />
         </Route>
       </Routes>
     </>

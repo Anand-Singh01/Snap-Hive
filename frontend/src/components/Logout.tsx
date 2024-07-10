@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../state/hooks";
 import { logout } from "../state/slices/userSlice";
 
-const Logout = () => {
+const Logout = ({title}:{title:string | ''}) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const signOut = () => {
@@ -12,8 +12,9 @@ const Logout = () => {
   };
 
   return (
-    <div className="cursor-pointer" onClick={signOut}>
+    <div title="logout" className="cursor-pointer flex gap-3" onClick={signOut}>
       <ExitToAppIcon sx={{ color: "#8d4efa" }} />
+      <p>{title}</p>
     </div>
   );
 };

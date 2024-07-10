@@ -27,7 +27,12 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         else {
             (0, token_1.updateTokenAndCookie)(res, { id: user.id.toString(), email }, "7d");
-            (0, helper_1.success)(res, { username: user.username, email, imageUrl: user.imageUrl });
+            (0, helper_1.success)(res, {
+                username: user.username,
+                email,
+                imageUrl: user.imageUrl,
+                name: user.name,
+            });
         }
     }
     catch (error) {
@@ -52,11 +57,16 @@ const userSignUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 data: {
                     email,
                     password: hashedPassword,
-                    username,
+                    username: username,
                 },
             });
             (0, token_1.updateTokenAndCookie)(res, { id: user.id.toString(), email }, "7d");
-            (0, helper_1.success)(res, { username, email, imageUrl: user.imageUrl });
+            (0, helper_1.success)(res, {
+                username,
+                email,
+                imageUrl: user.imageUrl,
+                name: user.name,
+            });
         }
     }
     catch (error) {
@@ -75,7 +85,12 @@ const authStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             },
         });
         if (user) {
-            (0, helper_1.success)(res, { username: user.username, email: user.email });
+            (0, helper_1.success)(res, {
+                username: user.username,
+                email: user.email,
+                imageUrl: user.imageUrl,
+                name: user.name,
+            });
         }
         else {
             (0, helper_1.unauthorizedError)(res, "unauthorized");

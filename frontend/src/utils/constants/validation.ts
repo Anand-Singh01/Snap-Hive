@@ -25,7 +25,18 @@ export const validationRules = {
     },
     maxLength: {
       value: 20,
-      message: "Username: 2-20 characters.",
+      message: "name: 2-20 characters.",
+    },
+  },
+  name: {
+    required: "name is required.",
+    minLength: {
+      value: 2,
+      message: "name: 2-20 characters.",
+    },
+    maxLength: {
+      value: 20,
+      message: "name: 2-20 characters.",
     },
   },
 };

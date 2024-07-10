@@ -22,7 +22,12 @@ export const userLogin = async (req: Request, res: Response) => {
       unauthorizedError(res, "invalid email or password.");
     } else {
       updateTokenAndCookie(res, { id: user.id.toString(), email }, "7d");
-      success(res, { username: user.username, email, imageUrl: user.imageUrl });
+      success(res, {
+        username: user.username,
+        email,
+        imageUrl: user.imageUrl,
+        name: user.name,
+      });
     }
   } catch (error) {
     serverError(res, error);
@@ -45,11 +50,16 @@ export const userSignUp = async (req: Request, res: Response) => {
         data: {
           email,
           password: hashedPassword,
-          username,
+          username: username,
         },
       });
       updateTokenAndCookie(res, { id: user.id.toString(), email }, "7d");
-      success(res, { username, email, imageUrl: user.imageUrl });
+      success(res, {
+        username,
+        email,
+        imageUrl: user.imageUrl,
+        name: user.name,
+      });
     }
   } catch (error) {
     serverError(res, error);
@@ -67,7 +77,12 @@ export const authStatus = async (req: Request, res: Response) => {
       },
     });
     if (user) {
-      success(res, { username: user.username, email: user.email });
+      success(res, {
+        username: user.username,
+        email: user.email,
+        imageUrl: user.imageUrl,
+        name: user.name,
+      });
     } else {
       unauthorizedError(res, "unauthorized");
     }
@@ -76,7 +91,7 @@ export const authStatus = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = async(req: Request, res: Response) => {
+export const logout = async (req: Request, res: Response) => {
   try {
     const { email } = res.locals.jwtData;
     const user = await prisma.user.findFirst({

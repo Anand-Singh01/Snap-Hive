@@ -8,7 +8,6 @@ export const bounce = (className: string) => {
     duration: 1,
   });
 };
-
 export const fade_zoom = (className: string) => {
   gsap.to(className, {
     opacity: 1,
@@ -25,11 +24,18 @@ export const zoom = (className: string) => {
     duration: 1,
   });
 };
-
 export const fade_up = (className: string) => {
   gsap.to(className, {
     opacity: 1,
     y: 0,
-    ease: "power1.inOut"
+    ease: "power1.inOut",
+  });
+};
+export const oneByOne = (className: string) => {
+  gsap.to(className, {
+    x: 0,
+    delay: 0.3,
+    opacity: 1,
+    stagger: 0.15,
   });
 };

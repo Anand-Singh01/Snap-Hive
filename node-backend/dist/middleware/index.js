@@ -19,8 +19,8 @@ const loginValidation = (req, res, next) => {
 exports.loginValidation = loginValidation;
 const signUpValidation = (req, res, next) => {
     try {
-        const { username, email, password } = req.body;
-        const result = validation_1.signUpSchema.safeParse({ username, email, password });
+        const { username, email, password, name } = req.body;
+        const result = validation_1.signUpSchema.safeParse({ username, email, password, name });
         if (!result.success) {
             return (0, helper_1.unauthorizedError)(res, "invalid credentials.");
         }

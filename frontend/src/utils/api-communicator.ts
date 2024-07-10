@@ -7,7 +7,7 @@ import {
   ILoginResponse,
   ISignUpData,
   ISignUpResponse,
-} from "./interfaces";
+} from "./constants/interfaces";
 
 export const loginUser = createAsyncThunk<
   ILoginResponse,

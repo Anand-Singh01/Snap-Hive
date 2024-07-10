@@ -85,3 +85,14 @@
 .home{
   @apply bg-black h-screen w-screen text-white p-[1rem]
 }
+
+/* LeftSideBar.tsx */
+.side-nav-link-container{
+  @apply translate-x-[-50px] opacity-0 mb-[1rem] p-[0.8rem]
+}
+.sidebar-profile-container{
+  @apply flex items-center gap-3 mb-[3rem] opacity-0
+}
+.side-nav-link{
+  @apply flex items-center gap-4
+}

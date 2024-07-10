@@ -25,8 +25,8 @@ export const signUpValidation = (
   next: NextFunction
 ) => {
   try {
-    const { username, email, password }: ISignUpData = req.body;
-    const result = signUpSchema.safeParse({ username, email, password });
+    const { username, email, password, name }: ISignUpData = req.body;
+    const result = signUpSchema.safeParse({ username, email, password, name });
     if (!result.success) {
       return unauthorizedError(res, "invalid credentials.");
     }

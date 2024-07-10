@@ -1,16 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loginUser, signUpUser } from "../../utils/api-communicator";
-import { IUserState } from "../../utils/interfaces";
+import { IUserState } from "../../utils/constants/interfaces";
 
 const initialState: IUserState = {
-  user: { username: null, email: null, imageUrl: null },
+  user: { username: null, email: null, imageUrl: null, name: null },
 };
 const userSlice = createSlice({
   name: "userSlice",
   initialState,
   reducers: {
     logout: (state) => {
-      state.user = { username: null, email: null, imageUrl: null };
+      state.user = { username: null, email: null, imageUrl: null, name: null };
 
       localStorage.removeItem("user-info");
     },
@@ -28,6 +28,7 @@ const userSlice = createSlice({
           username: action.payload.username,
           email: action.payload.email,
           imageUrl: action.payload.imageUrl,
+          name: action.payload.name,
         })
       );
     });
@@ -41,6 +42,7 @@ const userSlice = createSlice({
           username: action.payload.username,
           email: action.payload.email,
           imageUrl: action.payload.imageUrl,
+          name: action.payload.name,
         })
       );
     });

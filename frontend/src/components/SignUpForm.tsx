@@ -3,8 +3,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../state/hooks";
 import { signUpUser } from "../utils/api-communicator";
-import { ISignUpData } from "../utils/interfaces";
-import { validationRules } from "../utils/validation";
+import { ISignUpData } from "../utils/constants/interfaces";
+import { validationRules } from "../utils/constants/validation";
 import Button from "./Button";
 import InputField from "./InputField";
 import Loader from "./Loader";
@@ -40,12 +40,22 @@ const SignUpForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="login-form">
+      <div className="input-container">
+          <InputField
+            type="text"
+            name="name"
+            label="name"
+            placeholder="name"
+            validation={validationRules.name}
+          />
+        </div>
+
         <div className="input-container">
           <InputField
             type="text"
             name="username"
             label="Username"
-            placeholder="name"
+            placeholder="username"
             validation={validationRules.username}
           />
         </div>
