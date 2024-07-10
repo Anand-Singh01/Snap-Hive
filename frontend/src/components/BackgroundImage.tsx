@@ -10,7 +10,7 @@ const BackgroundImage: React.FC<ImageProps> = React.memo(
   ({ pattern }) => {
     useGSAP(() => {
       fade_zoom(".img-container");
-    }, []); // Ensure this effect runs only once when the component mounts
+    }, []);
 
     return (
       <div

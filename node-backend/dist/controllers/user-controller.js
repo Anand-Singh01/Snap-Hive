@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authStatus = exports.userSignUp = exports.userLogin = void 0;
+exports.logout = exports.authStatus = exports.userSignUp = exports.userLogin = void 0;
 const bcrypt_1 = require("bcrypt");
 const index_1 = require("../index");
 const helper_1 = require("../util/helper");
@@ -27,7 +27,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         else {
             (0, token_1.updateTokenAndCookie)(res, { id: user.id.toString(), email }, "7d");
-            (0, helper_1.success)(res, { username: user.username, email });
+            (0, helper_1.success)(res, { username: user.username, email, imageUrl: user.imageUrl });
         }
     }
     catch (error) {
@@ -45,7 +45,7 @@ const userSignUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             },
         });
         if (userWithSameEmail) {
-            (0, helper_1.badRequest)(res, "this email already exists.");
+            (0, helper_1.badRequest)(res, "this email is already taken.");
         }
         else {
             const user = yield index_1.prisma.user.create({
@@ -56,7 +56,7 @@ const userSignUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 },
             });
             (0, token_1.updateTokenAndCookie)(res, { id: user.id.toString(), email }, "7d");
-            (0, helper_1.success)(res, { username, email });
+            (0, helper_1.success)(res, { username, email, imageUrl: user.imageUrl });
         }
     }
     catch (error) {
@@ -86,3 +86,30 @@ const authStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.authStatus = authStatus;
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email } = res.locals.jwtData;
+        const user = yield index_1.prisma.user.findFirst({
+            where: {
+                email,
+            },
+        });
+        if (!user) {
+            return (0, helper_1.unauthorizedError)(res, "unauthorized");
+        }
+        else {
+            res.clearCookie(process.env.COOKIE_NAME || "auth-token", {
+                httpOnly: true,
+                signed: true,
+                sameSite: "none",
+                secure: process.env.NODE_ENV === "production",
+                path: "/",
+            });
+            return (0, helper_1.success)(res, { msg: "success" });
+        }
+    }
+    catch (error) {
+        return (0, helper_1.serverError)(res, error);
+    }
+});
+exports.logout = logout;

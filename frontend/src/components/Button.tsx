@@ -3,7 +3,7 @@ import { FC } from "react";
 interface ButtonProps {
   type: "button" | "submit" | "reset";
   onClick?: () => void;
-  className: string;
+  className?: string;
   children: string | JSX.Element;
 }
 

@@ -1,8 +1,13 @@
-
+import LeftSideBar from "../../components/LeftSideBar";
+import Topbar from "../../components/Topbar";
 const HomePage = () => {
   return (
-    <div>HomePage</div>
-  )
-}
+    <section className="home">
+      <Topbar />
+      <LeftSideBar />
+      Home
+    </section>
+  );
+};
 
-export default HomePage
+export default HomePage;

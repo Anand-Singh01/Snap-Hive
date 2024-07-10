@@ -14,6 +14,7 @@ export interface ISignUpData {
 export interface ICurrentUser {
   username: string | null;
   email: string | null;
+  imageUrl: string | null;
 }
 
 export interface IErrorState{

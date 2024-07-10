@@ -14,7 +14,7 @@ export const fade_zoom = (className: string) => {
     opacity: 1,
     scale: 1,
     ease: "circ.out",
-    duration: 1,
+    duration: 3,
   });
 };
 export const zoom = (className: string) => {
@@ -23,5 +23,13 @@ export const zoom = (className: string) => {
     scale: 2,
     ease: "circ.out",
     duration: 1,
+  });
+};
+
+export const fade_up = (className: string) => {
+  gsap.to(className, {
+    opacity: 1,
+    y: 0,
+    ease: "power1.inOut"
   });
 };

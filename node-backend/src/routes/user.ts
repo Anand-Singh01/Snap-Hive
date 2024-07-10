@@ -1,8 +1,9 @@
 import { Router } from "express";
 import {
     authStatus,
+    logout,
     userLogin,
-    userSignUp,
+    userSignUp
 } from "../controllers/user-controller";
 import { loginValidation, signUpValidation } from "../middleware/index";
 import { verifyToken } from "../util/token";
@@ -16,3 +17,6 @@ userRoutes.post("/signUp", signUpValidation, userSignUp);
 
 // /user/auth-status
 userRoutes.get("/auth-status", verifyToken, authStatus);
+
+// /user/logout
+userRoutes.get("/logout", verifyToken, logout);

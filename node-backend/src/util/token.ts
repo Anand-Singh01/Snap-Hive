@@ -3,7 +3,7 @@ import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { serverError, unauthorizedError } from "../util/helper";
 import { ITokenData } from "../util/interfaces";
 
-const COOKIE_NAME = "auth_token";
+const COOKIE_NAME = process.env.COOKIE_NAME || "auth-token";
 
 export const createToken = (data: ITokenData, expiresIn: string) => {
   try {

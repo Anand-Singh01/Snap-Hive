@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateTokenAndCookie = exports.verifyToken = exports.createToken = void 0;
 const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const helper_1 = require("../util/helper");
-const COOKIE_NAME = "auth_token";
+const COOKIE_NAME = process.env.COOKIE_NAME || "auth-token";
 const createToken = (data, expiresIn) => {
     try {
         const { id, email } = data;

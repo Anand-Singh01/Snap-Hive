@@ -16,7 +16,7 @@ export const loginUser = createAsyncThunk<
 >("user/login", async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post("/user/login", payload);
-    const data: ICurrentUser = await res.data;
+    const data: ICurrentUser = await res.data.payload;
     return { ...data };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

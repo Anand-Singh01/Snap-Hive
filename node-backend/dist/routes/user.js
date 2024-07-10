@@ -12,3 +12,5 @@ exports.userRoutes.post("/login", index_1.loginValidation, user_controller_1.use
 exports.userRoutes.post("/signUp", index_1.signUpValidation, user_controller_1.userSignUp);
 // /user/auth-status
 exports.userRoutes.get("/auth-status", token_1.verifyToken, user_controller_1.authStatus);
+// /user/logout
+exports.userRoutes.get("/logout", token_1.verifyToken, user_controller_1.logout);

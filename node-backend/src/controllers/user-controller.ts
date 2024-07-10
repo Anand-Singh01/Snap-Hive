@@ -22,7 +22,7 @@ export const userLogin = async (req: Request, res: Response) => {
       unauthorizedError(res, "invalid email or password.");
     } else {
       updateTokenAndCookie(res, { id: user.id.toString(), email }, "7d");
-      success(res, { username: user.username, email });
+      success(res, { username: user.username, email, imageUrl: user.imageUrl });
     }
   } catch (error) {
     serverError(res, error);
@@ -49,7 +49,7 @@ export const userSignUp = async (req: Request, res: Response) => {
         },
       });
       updateTokenAndCookie(res, { id: user.id.toString(), email }, "7d");
-      success(res, { username, email });
+      success(res, { username, email, imageUrl: user.imageUrl });
     }
   } catch (error) {
     serverError(res, error);
@@ -73,5 +73,30 @@ export const authStatus = async (req: Request, res: Response) => {
     }
   } catch (error) {
     serverError(res, error);
+  }
+};
+
+export const logout = async(req: Request, res: Response) => {
+  try {
+    const { email } = res.locals.jwtData;
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (!user) {
+      return unauthorizedError(res, "unauthorized");
+    } else {
+      res.clearCookie(process.env.COOKIE_NAME || "auth-token", {
+        httpOnly: true,
+        signed: true,
+        sameSite: "none",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+      });
+      return success(res, { msg: "success" });
+    }
+  } catch (error) {
+    return serverError(res, error);
   }
 };

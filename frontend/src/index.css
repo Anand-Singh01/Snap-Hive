@@ -72,3 +72,16 @@
 .error-span {
   @apply text-red-400;
 }
+
+/* topbar.tsx */
+.logo_title{
+  @apply flex items-center gap-2 opacity-0 translate-y-7
+}
+.logout-logo{
+  @apply opacity-0 translate-y-8
+}
+
+/* homePage.tsx */
+.home{
+  @apply bg-black h-screen w-screen text-white p-[1rem]
+}
