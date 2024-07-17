@@ -28,6 +28,7 @@ export const fade_up = (className: string) => {
   gsap.to(className, {
     opacity: 1,
     y: 0,
+    x: 0,
     ease: "power1.inOut",
   });
 };

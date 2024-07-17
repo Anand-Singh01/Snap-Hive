@@ -6,7 +6,7 @@ const Loader = () => {
     zoom(".loader");
   }, []);
   return (
-    <div className="loader flex justify-center">
+    <div className="loader px-3 flex justify-center items-center">
       <ThreeDots
         visible={true}
         height="25"

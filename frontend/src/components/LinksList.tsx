@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { links } from "../utils/constants/shared";
+import { getCurrentPage, links } from "../utils/constants/shared";
 
 const LinksList = () => {
-  const [currPage, setCurrPage] = useState(
-    localStorage.getItem("curr-page") || "Home"
-  );
+  const [currPage, setCurrPage] = useState<string>("Home");
 
   const updatePage = (title: string) => {
     setCurrPage(title);
-    localStorage.setItem("curr-page", title);
   };
-  
+
+  useEffect(() => {
+    const currPage = getCurrentPage();
+    setCurrPage(currPage);
+  }, []);
   return (
     <div>
       {links.map(({ path, Logo, title }) => {

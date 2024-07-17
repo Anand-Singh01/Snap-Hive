@@ -7,11 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Profile {
+  id         String @id @default(uuid())
+  profilePic String @default("https://res.cloudinary.com/dpm7rnqq8/image/upload/v1720614505/snap-Hive/qzw66oqcdbbwfpczbtyk.webp")
+  user       User   @relation(fields: [userId], references: [id])
+  userId     String @unique
+}
+
 model User {
-  id       Int    @id @default(autoincrement())
-  name String @default("Akash")
-  email    String @unique
-  password String
-  username String
-  imageUrl String @default("https://res.cloudinary.com/dpm7rnqq8/image/upload/v1720614505/snap-Hive/qzw66oqcdbbwfpczbtyk.webp")
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  password     String
+  username     String
+  writtenPosts Post[]    @relation("postedByRelation")
+  likedPosts   Post[]    @relation("likedByRelation")
+  comments     Comment[] @relation("commentByRelation")
+  savedPosts   Post[]    @relation("savedByRelation")
+  profile      Profile?
+}
+
+model Post {
+  id            String    @id @default(uuid())
+  caption       String?
+  location      String?
+  postImage     String
+  totalLikes    Int       @default(0)
+  totalComments Int       @default(0)
+  postedBy      User      @relation("postedByRelation", fields: [userId], references: [id])
+  userId        String
+  likedBy       User[]    @relation("likedByRelation")
+  comments      Comment[]
+  savedBy       User[]    @relation("savedByRelation")
+  tags          Tag[]     @relation("tagUnderPostRelation")
+  createdAt     DateTime  @default(now())
+}
+
+model Tag {
+  id       String @id @default(uuid())
+  tagName  String
+  tagUnder Post[] @relation("tagUnderPostRelation")
+}
+
+model Comment {
+  id            String @id @default(uuid())
+  comment       String
+  commentedPost Post   @relation(fields: [postId], references: [id])
+  postId        String
+  commentBy     User   @relation("commentByRelation", fields: [userId], references: [id])
+  userId        String
 }

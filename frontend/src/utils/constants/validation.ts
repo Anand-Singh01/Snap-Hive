@@ -39,4 +39,29 @@ export const validationRules = {
       message: "name: 2-20 characters.",
     },
   },
+
+  caption: {
+    maxLength: {
+      value: 500,
+      message: "caption: max 50 character.",
+    },
+  },
+
+  location: {
+    maxLength: {
+      value: 20,
+      message: "location: max 20 character.",
+    },
+  },
+
+  tags: {
+    maxLength: {
+      value: 50,
+      message: "tags: max 50 character.",
+    },
+  },
+
+  image:{
+  
+  }
 };

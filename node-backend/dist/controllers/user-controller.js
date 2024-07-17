@@ -15,23 +15,28 @@ const index_1 = require("../index");
 const helper_1 = require("../util/helper");
 const token_1 = require("../util/token");
 const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const { email, password } = req.body;
         const user = yield index_1.prisma.user.findFirst({
             where: {
                 email,
             },
+            include: {
+                profile: true,
+            },
         });
         if (!user || !(yield (0, bcrypt_1.compare)(password, user.password))) {
             (0, helper_1.unauthorizedError)(res, "invalid email or password.");
         }
         else {
-            (0, token_1.updateTokenAndCookie)(res, { id: user.id.toString(), email }, "7d");
+            (0, token_1.updateTokenAndCookie)(res, { id: user.id, email }, "7d");
             (0, helper_1.success)(res, {
                 username: user.username,
+                userId: user.id,
                 email,
-                imageUrl: user.imageUrl,
                 name: user.name,
+                profilePic: ((_a = user.profile) === null || _a === void 0 ? void 0 : _a.profilePic) || null,
             });
         }
     }
@@ -41,8 +46,9 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.userLogin = userLogin;
 const userSignUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     try {
-        const { username, email, password } = req.body;
+        const { name, email, password, username } = req.body;
         const hashedPassword = yield (0, bcrypt_1.hash)(password, 10);
         const userWithSameEmail = yield index_1.prisma.user.findFirst({
             where: {
@@ -57,15 +63,23 @@ const userSignUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 data: {
                     email,
                     password: hashedPassword,
-                    username: username,
+                    username,
+                    name,
+                    profile: {
+                        create: {},
+                    },
+                },
+                include: {
+                    profile: true,
                 },
             });
-            (0, token_1.updateTokenAndCookie)(res, { id: user.id.toString(), email }, "7d");
+            (0, token_1.updateTokenAndCookie)(res, { id: user.id, email }, "7d");
             (0, helper_1.success)(res, {
                 username,
                 email,
-                imageUrl: user.imageUrl,
-                name: user.name,
+                userId: user.id,
+                name,
+                profilePic: ((_b = user.profile) === null || _b === void 0 ? void 0 : _b.profilePic) || null,
             });
         }
     }
@@ -75,21 +89,25 @@ const userSignUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.userSignUp = userSignUp;
 const authStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
     try {
         const data = res.locals.jwtData;
-        console.log(data);
         const user = yield index_1.prisma.user.findFirst({
             where: {
-                id: Number(data.id),
+                id: data.id,
                 email: data.email,
+            },
+            include: {
+                profile: true,
             },
         });
         if (user) {
             (0, helper_1.success)(res, {
                 username: user.username,
                 email: user.email,
-                imageUrl: user.imageUrl,
+                userId: user.id,
                 name: user.name,
+                profilePic: ((_c = user.profile) === null || _c === void 0 ? void 0 : _c.profilePic) || null,
             });
         }
         else {

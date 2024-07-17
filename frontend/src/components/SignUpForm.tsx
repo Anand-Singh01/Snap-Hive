@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../state/hooks";
-import { signUpUser } from "../utils/api-communicator";
+import { signUpUser } from "../utils/api-communicators/user";
 import { ISignUpData } from "../utils/constants/interfaces";
 import { validationRules } from "../utils/constants/validation";
 import Button from "./Button";
@@ -16,10 +16,8 @@ const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: ISignUpData) => {
+    setIsLoading(true);
     const result = await dispatch(signUpUser(data));
-    if (signUpUser.pending.match(result)) {
-      setIsLoading(true);
-    }
     if (signUpUser.fulfilled.match(result)) {
       setIsLoading(false);
       navigate("/");
@@ -40,8 +38,10 @@ const SignUpForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="login-form">
-      <div className="input-container">
+        <div className="input-container">
           <InputField
+            inputClass="inputDiv-login-signup"
+            labelClass="text-[12px] my-3"
             type="text"
             name="name"
             label="name"
@@ -52,6 +52,8 @@ const SignUpForm = () => {
 
         <div className="input-container">
           <InputField
+            inputClass="inputDiv-login-signup"
+            labelClass="text-[12px] my-3"
             type="text"
             name="username"
             label="Username"
@@ -61,6 +63,8 @@ const SignUpForm = () => {
         </div>
         <div className="input-container">
           <InputField
+            inputClass="inputDiv-login-signup"
+            labelClass="text-[12px] my-3"
             type="email"
             name="email"
             label="Email"
@@ -70,6 +74,8 @@ const SignUpForm = () => {
         </div>
         <div className="input-container">
           <InputField
+            inputClass="inputDiv-login-signup"
+            labelClass="text-[12px] my-3"
             name="password"
             label="Password"
             type="password"

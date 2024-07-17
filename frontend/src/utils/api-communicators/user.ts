@@ -1,13 +1,16 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import {
+  ICreatePostData,
+  ICreatePostResponse,
   ICurrentUser,
   IErrorResponse,
   ILoginData,
   ILoginResponse,
+  ILogoutResponse,
   ISignUpData,
   ISignUpResponse,
-} from "./constants/interfaces";
+} from "../constants/interfaces";
 
 export const loginUser = createAsyncThunk<
   ILoginResponse,
@@ -22,7 +25,7 @@ export const loginUser = createAsyncThunk<
     if (axios.isAxiosError(error) && error.response) {
       const responseError: IErrorResponse = {
         error: error.response.data,
-        status:error.response.status
+        status: error.response.status,
       };
       return rejectWithValue(responseError);
     }
@@ -37,13 +40,13 @@ export const checkAuthStatus = createAsyncThunk<
 >("user/auth-status", async (_, { rejectWithValue }) => {
   try {
     const res = await axios.get("/user/auth-status");
-    const data: ICurrentUser = await res.data;
+    const data: ICurrentUser = await res.data.payload;
     return { ...data };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       const responseError: IErrorResponse = {
         error: error.response.data,
-        status:error.response.status
+        status: error.response.status,
       };
       return rejectWithValue(responseError);
     }
@@ -58,13 +61,59 @@ export const signUpUser = createAsyncThunk<
 >("user/signUpUser", async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post("/user/signUp", payload);
-    const data: ICurrentUser = await res.data;
+    const data: ICurrentUser = await res.data.payload;
     return { ...data };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       const responseError: IErrorResponse = {
         error: error.response.data.errors ?? error.response.data,
-        status:error.response.status
+        status: error.response.status,
+      };
+      return rejectWithValue(responseError);
+    }
+    throw error;
+  }
+});
+
+export const createPost = createAsyncThunk<
+  ICreatePostResponse,
+  ICreatePostData,
+  { rejectValue: IErrorResponse }
+>("post/addPost", async (payload, { rejectWithValue }) => {
+  try {
+    const res = await axios.post("/post/addPost", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    const data: ICreatePostResponse = await res.data.payload;
+    return { ...data };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const responseError: IErrorResponse = {
+        error: error.response.data,
+        status: error.response.status,
+      };
+      return rejectWithValue(responseError);
+    }
+    throw error;
+  }
+});
+
+export const logoutUser = createAsyncThunk<
+  ILogoutResponse,
+  void,
+  { rejectValue: IErrorResponse }
+>("user/logout", async (_, { rejectWithValue }) => {
+  try {
+    const res = await axios.get("/user/logout");
+    const data: ILogoutResponse = await res.data.payload;
+    return { ...data };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const responseError: IErrorResponse = {
+        error: error.response.data,
+        status: error.response.status,
       };
       return rejectWithValue(responseError);
     }

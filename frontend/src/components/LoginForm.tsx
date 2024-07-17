@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../state/hooks";
-import { loginUser } from "../utils/api-communicator";
+import { loginUser } from "../utils/api-communicators/user";
 import { ILoginData } from "../utils/constants/interfaces";
 import { validationRules } from "../utils/constants/validation";
 import Button from "./Button";
@@ -16,10 +16,8 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: ILoginData) => {
+    setIsLoading(true);
     const result = await dispatch(loginUser(data));
-    if (loginUser.pending.match(result)) {
-      setIsLoading(true);
-    }
     if (loginUser.fulfilled.match(result)) {
       setIsLoading(false);
       navigate("/");
@@ -42,6 +40,8 @@ const LoginForm = () => {
       <form onSubmit={methods.handleSubmit(onSubmit)} className="login-form">
         <div className="input-container">
           <InputField
+            labelClass="text-[12px] my-3"
+            inputClass="inputDiv-login-signup"
             type="email"
             name="email"
             label="Email"
@@ -51,6 +51,8 @@ const LoginForm = () => {
         </div>
         <div className="input-container">
           <InputField
+            inputClass="inputDiv-login-signup"
+            labelClass="text-[12px] my-3"
             name="password"
             label="Password"
             type="password"

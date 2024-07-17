@@ -17,16 +17,20 @@ export const userLogin = async (req: Request, res: Response) => {
       where: {
         email,
       },
+      include: {
+        profile: true,
+      },
     });
     if (!user || !(await compare(password, user.password))) {
       unauthorizedError(res, "invalid email or password.");
     } else {
-      updateTokenAndCookie(res, { id: user.id.toString(), email }, "7d");
+      updateTokenAndCookie(res, { id: user.id, email }, "7d");
       success(res, {
         username: user.username,
+        userId:user.id,
         email,
-        imageUrl: user.imageUrl,
         name: user.name,
+        profilePic: user.profile?.profilePic || null,
       });
     }
   } catch (error) {
@@ -36,7 +40,7 @@ export const userLogin = async (req: Request, res: Response) => {
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
-    const { username, email, password }: ISignUpData = req.body;
+    const { name, email, password, username }: ISignUpData = req.body;
     const hashedPassword = await hash(password, 10);
     const userWithSameEmail = await prisma.user.findFirst({
       where: {
@@ -50,15 +54,24 @@ export const userSignUp = async (req: Request, res: Response) => {
         data: {
           email,
           password: hashedPassword,
-          username: username,
+          username,
+          name,
+          profile: {
+            create: {},
+          },
+        },
+        include: {
+          profile: true,
         },
       });
-      updateTokenAndCookie(res, { id: user.id.toString(), email }, "7d");
+
+      updateTokenAndCookie(res, { id: user.id, email }, "7d");
       success(res, {
         username,
         email,
-        imageUrl: user.imageUrl,
-        name: user.name,
+        userId:user.id,
+        name,
+        profilePic: user.profile?.profilePic || null,
       });
     }
   } catch (error) {
@@ -69,19 +82,22 @@ export const userSignUp = async (req: Request, res: Response) => {
 export const authStatus = async (req: Request, res: Response) => {
   try {
     const data: ITokenData = res.locals.jwtData;
-    console.log(data);
     const user = await prisma.user.findFirst({
       where: {
-        id: Number(data.id),
+        id: data.id,
         email: data.email,
+      },
+      include: {
+        profile: true,
       },
     });
     if (user) {
       success(res, {
         username: user.username,
         email: user.email,
-        imageUrl: user.imageUrl,
+        userId:user.id,
         name: user.name,
+        profilePic: user.profile?.profilePic || null,
       });
     } else {
       unauthorizedError(res, "unauthorized");
