@@ -3,8 +3,7 @@ import axios from "axios";
 import {
   ICreatePostResponse,
   IErrorResponse,
-  IFetchRecentPostPostResponse,
-  ILikedPosts,
+  IFetchRecentPostPostResponse
 } from "../constants/interfaces";
 
 export const fetchRecentPosts = createAsyncThunk<
@@ -49,24 +48,3 @@ export const likeAPost = createAsyncThunk<
   }
 });
 
-export const getLikedPosts = createAsyncThunk<
-  ILikedPosts,
-  void,
-  { rejectValue: IErrorResponse }
->("/post/likedPosts", async (_, { rejectWithValue }) => {
-  try {
-    const res = await axios.get("/post/likedPosts");
-    const data: ILikedPosts = await res.data.payload;
-    console.log(data);
-    return data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const responseError: IErrorResponse = {
-        error: error.response.data,
-        status: error.response.status,
-      };
-      return rejectWithValue(responseError);
-    }
-    throw error;
-  }
-});

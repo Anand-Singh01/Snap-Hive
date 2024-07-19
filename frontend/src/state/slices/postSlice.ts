@@ -1,14 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  fetchRecentPosts,
-  getLikedPosts,
-} from "../../utils/api-communicators/post";
+import { fetchRecentPosts } from "../../utils/api-communicators/post";
 import { logoutUser } from "../../utils/api-communicators/user";
 import { IPostInitialState } from "../../utils/constants/interfaces";
 
 const initialState: IPostInitialState = {
   posts: [],
-  likedPosts: [],
+  status: "idle",
 };
 
 const postSlice = createSlice({
@@ -23,11 +20,11 @@ const postSlice = createSlice({
         switch (type) {
           case "add":
             state.posts[index].totalLikes++;
-            state.likedPosts.push({ id: postId });
+            state.posts[index].isLiked = true;
             break;
           case "remove":
             state.posts[index].totalLikes--;
-            state.likedPosts.filter((post) => post.id !== postId);
+            state.posts[index].isLiked = false;
             break;
           default:
             break;
@@ -37,13 +34,16 @@ const postSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRecentPosts.fulfilled, (state, action) => {
+      state.status = "succeeded";
       const data = action.payload;
       state.posts.push(...data.posts);
     });
-
-    builder.addCase(getLikedPosts.fulfilled, (state, action) => {
-      const data = action.payload;
-      state.likedPosts.push(...data.likedPosts);
+    builder.addCase(fetchRecentPosts.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(fetchRecentPosts.rejected, (state) => {
+      state.status = "failed";
+      alert("error");
     });
 
     builder.addCase(logoutUser.fulfilled, (state) => {

@@ -15,7 +15,7 @@ const RootLayout = () => {
           </div>
         </div>
       </div>
-      <section className="w-full flex-1">
+      <section className="w-full flex-1 md:mt-[3.5rem]">
         <Outlet />
       </section>
     </section>

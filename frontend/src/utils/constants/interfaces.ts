@@ -88,16 +88,17 @@ export interface ISinglePost {
   totalLikes: number;
   totalComments: number;
   createdAt: string;
+  isLiked: boolean;
 }
-export interface IPostInitialState
-  extends ILikedPosts,
-    IFetchRecentPostPostResponse {}
+export interface IPostInitialState extends IFetchRecentPostPostResponse {
+    status:'loading' | 'succeeded' | 'failed' | 'idle'
+}
 
-export interface ILikedPosts {
-  likedPosts: Array<{
-    id: string;
-  }>;
-}
+// export interface ILikedPosts {
+//   likedPosts: Array<{
+//     id: string;
+//   }>;
+// }
 
 export interface IFetchRecentPostPostResponse {
   posts: Array<

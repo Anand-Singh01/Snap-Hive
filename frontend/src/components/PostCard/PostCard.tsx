@@ -15,10 +15,7 @@ interface PostCardProps {
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const id = useAppSelector((state) => state.user.user.userId);
   return (
-    <div
-      style={{ boxShadow: "5px 5px 5px 5px rgba(20, 30, 50, 1)" }}
-      className="bg-gray-900 rounded-lg w-[90%] sm:w-[60%] max-w-[400px]"
-    >
+    <div className="bg-gray-900 rounded-lg w-[90%] sm:w-[50%] max-w-[350px]">
       <div className="flex flex-col gap-3 sm:p-[1rem] p-[0.5rem]">
         <div className="flex items-center justify-between">
           <div className="flex gap-3 items-center">
@@ -39,7 +36,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <img className="post-image" src={post.postImage} alt="postImage" />
       </div>
       <div className="p-3 flex justify-between items-center">
-        <LikePost totalLikes={post.totalLikes} postId={post.id} />
+        <LikePost
+          totalLikes={post.totalLikes}
+          isLiked={post.isLiked}
+          postId={post.id}
+        />
         <SavePost />
       </div>
     </div>

@@ -8,8 +8,7 @@ import { ITokenData } from "../util/interfaces";
 
 export const addPost = async (req: Request, res: Response) => {
   try {
-    const data: ITokenData = res.locals.jwtData;
-    const { id, email } = data;
+    const { id, email } = res.locals.jwtData;
     const { caption, location } = req.body;
     const user = await prisma.user.findFirst({
       where: {
@@ -46,6 +45,7 @@ export const addPost = async (req: Request, res: Response) => {
 
 export const recentPosts = async (req: Request, res: Response) => {
   try {
+    const data: ITokenData = res.locals.jwtData;
     const posts = await prisma.post.findMany({
       orderBy: {
         createdAt: "desc",
@@ -71,6 +71,11 @@ export const recentPosts = async (req: Request, res: Response) => {
             },
           },
         },
+        likedBy: {
+          where: {
+            id: data.id,
+          },
+        },
         tags: {
           select: {
             id: true,
@@ -79,8 +84,14 @@ export const recentPosts = async (req: Request, res: Response) => {
         },
       },
     });
-
-    return success(res, { posts: posts });
+    const newPosts = posts.map((post) => {
+      const { likedBy, ...rest } = post;
+      return {
+        ...rest,
+        isLiked: likedBy.length > 0,
+      };
+    });
+    return success(res, { posts: newPosts });
   } catch (error) {
     serverError(res, error);
   }

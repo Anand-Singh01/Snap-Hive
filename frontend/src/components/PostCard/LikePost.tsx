@@ -1,17 +1,17 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../state/hooks";
+import React, { useState } from "react";
+import { useAppDispatch } from "../../state/hooks";
 import { updateLike } from "../../state/slices/postSlice";
 import { likeAPost } from "../../utils/api-communicators/post";
 interface Likes {
   totalLikes: number;
   postId: string;
+  isLiked: boolean;
 }
 const LikePost: React.FC<Likes> = (post) => {
-  const likedPosts = useAppSelector((state) => state.post.likedPosts);
   const dispatch = useAppDispatch();
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(post.isLiked);
 
   const like_Click = async () => {
     isLiked
@@ -27,16 +27,9 @@ const LikePost: React.FC<Likes> = (post) => {
       alert("server error");
     }
   };
-  useEffect(() => {
-    likedPosts.forEach(({ id }) => {
-      if (id === post.postId) {
-        setIsLiked(true);
-      }
-    });
-  }, [likedPosts, post.postId]);
   return (
     <div className="flex items-center gap-1">
-      <div onClick={like_Click}>
+      <div className="cursor-pointer" onClick={like_Click}>
         {isLiked ? (
           <FavoriteIcon sx={{ color: "red" }} />
         ) : (

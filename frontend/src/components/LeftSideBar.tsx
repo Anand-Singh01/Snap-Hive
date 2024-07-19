@@ -14,7 +14,7 @@ const LeftSideBar = () => {
   const name = useAppSelector((state) => state.user.user.name);
   const username = useAppSelector((state) => state.user.user.username);
   return (
-    <nav className="leftsidebar">
+    <nav className="leftsidebar p-5 rounded-r-lg bg-gray-800 border-purple-300">
       <div>
         <div className="sidebar-profile-container">
           <ProfileLogo />
@@ -46,7 +46,7 @@ const LeftSideBar = () => {
           </div>
         </div>
         <LinksList />
-        <p className="sidebar-profile-container translate-y-5 border-gray-50 border-[0.1px]" />
+        <p className="sidebar-profile-container translate-y-5 border-gray-600 border-[0.1px]" />
         <div className="side-nav-link-container mt-[2rem] text-purple-500 font-semibold">
           <Logout title={"logout"} />
         </div>

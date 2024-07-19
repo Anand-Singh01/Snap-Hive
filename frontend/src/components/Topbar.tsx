@@ -9,7 +9,6 @@ const Topbar = () => {
     fade_up(".logout-logo");
   }, []);
   return (
-    <div>
       <div className="flex justify-between items-center">
         <div className="logo_title">
           <img className="sm:w-[2.5rem] w-[2rem]" src={logo} alt="app logo" />
@@ -20,7 +19,6 @@ const Topbar = () => {
           <ProfileLogo />
         </div>
       </div>
-    </div>
   );
 };
 
