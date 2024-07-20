@@ -1,8 +1,9 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useAppDispatch } from "../../state/hooks";
 import { updateLike } from "../../state/slices/postSlice";
+import { bounce2 } from "../../utils/animate";
 import { likeAPost } from "../../utils/api-communicators/post";
 interface Likes {
   totalLikes: number;
@@ -12,8 +13,9 @@ interface Likes {
 const LikePost: React.FC<Likes> = (post) => {
   const dispatch = useAppDispatch();
   const [isLiked, setIsLiked] = useState(post.isLiked);
-
+  const divRef = useRef<HTMLDivElement>(null);
   const like_Click = async () => {
+    bounce2(divRef.current);
     isLiked
       ? dispatch(updateLike({ type: "remove", postId: post.postId }))
       : dispatch(updateLike({ type: "add", postId: post.postId }));
@@ -29,7 +31,7 @@ const LikePost: React.FC<Likes> = (post) => {
   };
   return (
     <div className="flex items-center gap-1">
-      <div className="cursor-pointer" onClick={like_Click}>
+      <div ref={divRef} className="cursor-pointer like" onClick={like_Click}>
         {isLiked ? (
           <FavoriteIcon sx={{ color: "red" }} />
         ) : (

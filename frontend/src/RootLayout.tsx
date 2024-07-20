@@ -4,7 +4,7 @@ import Topbar from "./components/Topbar";
 
 const RootLayout = () => {
   return (
-    <section className="home md:flex md:gap-4 border-orange-400">
+    <section className="home md:flex h-screen md:gap-4">
       <div>
         <div className="mb-[2rem] md:w-fit">
           <Topbar />

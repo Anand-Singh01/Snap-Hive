@@ -10,7 +10,9 @@ axios.defaults.withCredentials = true;
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <Provider store={store}>
+      {/* <AuthProvider> */}
       <App />
+      {/* </AuthProvider> */}
     </Provider>
   </BrowserRouter>
 );

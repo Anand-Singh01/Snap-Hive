@@ -1,9 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
-const ProtectedRoutes = () => {
-  const user: boolean = true;
-  return (
-    <div className="">{user ? <Outlet /> : <Navigate to={"/login"} />}</div>
-  );
+
+const ProtectedRoute = () => {
+  const user = localStorage.getItem("user");
+  if (user) {
+    return (
+      <div className="h-screen">
+        <Outlet />
+      </div>
+    );
+  } else {
+    return <Navigate to={"/login"} />;
+  }
 };
 
-export default ProtectedRoutes;
+export default ProtectedRoute;

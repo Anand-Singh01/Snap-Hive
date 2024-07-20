@@ -1,9 +1,10 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { config } from "dotenv";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { postRoutes } from "./routes/post";
 import { userRoutes } from "./routes/user";
+import { unauthorizedError } from "./util/helper";
 
 config();
 const app = express();
@@ -27,4 +28,9 @@ app.use(
 );
 app.use("/user", userRoutes);
 app.use("/post", postRoutes);
+
+// global Catch
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  return unauthorizedError(res, "unauthorized");
+});
 export default app;

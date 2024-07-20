@@ -40,6 +40,7 @@ export interface IErrorState {
 
 export interface IUserState {
   user: ICurrentUser;
+  authStatus: IStatus
 }
 
 export interface ICurrPage {
@@ -89,9 +90,13 @@ export interface ISinglePost {
   totalComments: number;
   createdAt: string;
   isLiked: boolean;
+  isSaved: boolean;
 }
-export interface IPostInitialState extends IFetchRecentPostPostResponse {
-    status:'loading' | 'succeeded' | 'failed' | 'idle'
+export interface IPostInitialState extends IFetchRecentPostPostResponse, IStatus {
+}
+
+export interface IStatus{
+  status:'loading' | 'succeeded' | 'failed' | 'idle'
 }
 
 // export interface ILikedPosts {

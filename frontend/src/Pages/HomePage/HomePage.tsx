@@ -11,7 +11,6 @@ const HomePage = () => {
     fade_up(".home-heading");
   }, []);
   const posts = useAppSelector((state) => state.post.posts);
-  const userId = useAppSelector((state) => state.user.user.userId);
   const status = useAppSelector((state) => state.post.status);
   const dispatch = useAppDispatch();
 
@@ -23,20 +22,16 @@ const HomePage = () => {
         alert("server Error");
       }
     };
-    if (userId) {
-      fetchPosts();
-    }
-  }, [dispatch, userId]);
+    fetchPosts();
+  }, [dispatch]);
 
   return (
-    <section>
-      <div className="">
-        <h1 className="create-post-title home-heading">Home Feed</h1>
-        <div className="posts-container posts-container-md">
-          {status === "loading"
-            ? [1, 2, 3, 4].map((_, index) => <PostSkeleton key={index} />)
-            : posts.map((post) => <PostCard key={post.id} post={post} />)}
-        </div>
+    <section className="">
+      <h1 className="create-post-title home-heading">Home Feed</h1>
+      <div className="posts-container posts-container-md">
+        {status === "loading"
+          ? [1, 2, 3, 4].map((_, index) => <PostSkeleton key={index} />)
+          : posts.map((post) => <PostCard key={post.id} post={post} />)}
       </div>
     </section>
   );

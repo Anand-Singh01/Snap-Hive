@@ -8,6 +8,20 @@ export const bounce = (className: string) => {
     duration: 1,
   });
 };
+
+export const bounce2 = (element: HTMLElement | null) => {
+  gsap.fromTo(
+    element,
+    { y: -10, opacity: 0 }, // Start position (adjust as needed)
+    {
+      y: 0,
+      opacity: 1,
+      ease: "bounce.out",
+      duration: 1.5,
+      stagger: 1,
+    }
+  );
+};
 export const fade_zoom = (className: string) => {
   gsap.to(className, {
     opacity: 1,

@@ -1,7 +1,5 @@
-import { useAppSelector } from "../../state/hooks";
 import { IPostedBy, ISinglePost, ITag } from "../../utils/constants/interfaces";
 import CardInfo from "./CardInfo";
-import EditPost from "./EditPost";
 import LikePost from "./LikePost";
 import PostCaption_tag from "./PostCaption_tag";
 import SavePost from "./SavePost";
@@ -13,7 +11,7 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const id = useAppSelector((state) => state.user.user.userId);
+  // const id = useAppSelector((state) => state.user.user.userId);
   return (
     <div className="bg-gray-900 rounded-lg w-[90%] sm:w-[50%] max-w-[350px]">
       <div className="flex flex-col gap-3 sm:p-[1rem] p-[0.5rem]">
@@ -26,7 +24,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               postedBy={post.postedBy.name}
             />
           </div>
-          {id === post.postedBy.id ? <EditPost postId={id} /> : <></>}
+          {/* {id === post.postedBy.id ? <EditPost postId={id} /> : <></>} */}
         </div>
         <div>
           <PostCaption_tag caption={post.caption} tags={post.tags} />
@@ -41,7 +39,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           isLiked={post.isLiked}
           postId={post.id}
         />
-        <SavePost />
+        <SavePost isSaved={post.isSaved} postId={post.id} />
       </div>
     </div>
   );

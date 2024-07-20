@@ -1,4 +1,6 @@
-import { Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { prisma } from "..";
+import { ITokenData } from "./interfaces";
 
 export const serverError = (res: Response, error: any) => {
   console.log(error);
@@ -15,4 +17,27 @@ export const success = (res: Response, payload: {}) => {
 
 export const badRequest = (res: Response, msg: string) => {
   return res.status(409).json({ msg });
+};
+
+export const checkIfUserExists = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data: ITokenData = res.locals.jwtData;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: data.id,
+        email: data.email,
+      },
+    });
+    if (user) {
+      next();
+    } else {
+      return unauthorizedError(res, "unauthorized");
+    }
+  } catch (error) {
+    return serverError(res, error);
+  }
 };

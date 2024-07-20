@@ -166,12 +166,18 @@
 
 @media (max-width: 640px) {
   .posts-container-md {
-    height: calc(100vh - 150px);
+    height: calc(100vh - 129px);
+  }
+  .create-post-section {
+    height: calc(100vh - 100px);
   }
 }
 
 @media (min-width: 640px) {
   .posts-container-md {
-    height: calc(100vh - 80px);
+    height: calc(100vh - 120px);
+  }
+  .create-post-section {
+    height: calc(100vh - 75px);
   }
 }

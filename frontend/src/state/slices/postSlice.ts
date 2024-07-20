@@ -31,6 +31,24 @@ const postSlice = createSlice({
         }
       }
     },
+
+    updateSave: (state, action) => {
+      const { postId, type } = action.payload;
+      const index = state.posts.findIndex((post) => post.id === postId);
+
+      if (index !== -1) {
+        switch (type) {
+          case "save":
+            state.posts[index].isSaved = true;
+            break;
+          case "unSave":
+            state.posts[index].isSaved = false;
+            break;
+          default:
+            break;
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRecentPosts.fulfilled, (state, action) => {
@@ -43,7 +61,7 @@ const postSlice = createSlice({
     });
     builder.addCase(fetchRecentPosts.rejected, (state) => {
       state.status = "failed";
-      alert("error");
+      // alert("error");
     });
 
     builder.addCase(logoutUser.fulfilled, (state) => {
@@ -52,5 +70,5 @@ const postSlice = createSlice({
   },
 });
 
-export const { updateLike } = postSlice.actions;
+export const { updateLike, updateSave } = postSlice.actions;
 export default postSlice.reducer;

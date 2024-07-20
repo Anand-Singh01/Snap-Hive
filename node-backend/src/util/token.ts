@@ -25,6 +25,7 @@ export const verifyToken = (
 ) => {
   try {
     const token = req.signedCookies[COOKIE_NAME];
+    console.log('token', token);
     if (!token || token.trim() == "") {
       unauthorizedError(res, "unauthorized");
     } else {
@@ -72,7 +73,7 @@ export const updateTokenAndCookie = (
     expires: newDate,
     sameSite: "none",
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     signed: true,
   });
 };

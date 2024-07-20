@@ -48,3 +48,24 @@ export const likeAPost = createAsyncThunk<
   }
 });
 
+export const saveAPost = createAsyncThunk<
+  ICreatePostResponse,
+  { postId: string },
+  { rejectValue: IErrorResponse }
+>("/post/SaveAPost", async ({ postId }, { rejectWithValue }) => {
+  try {
+    const res = await axios.get(`/post/save-post/${postId}`);
+    const data: ICreatePostResponse = await res.data.payload;
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const responseError: IErrorResponse = {
+        error: error.response.data,
+        status: error.response.status,
+      };
+      return rejectWithValue(responseError);
+    }
+    throw error;
+  }
+});
+

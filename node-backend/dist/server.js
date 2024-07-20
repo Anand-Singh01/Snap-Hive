@@ -9,6 +9,7 @@ const dotenv_1 = require("dotenv");
 const express_1 = __importDefault(require("express"));
 const post_1 = require("./routes/post");
 const user_1 = require("./routes/user");
+const helper_1 = require("./util/helper");
 (0, dotenv_1.config)();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -27,4 +28,8 @@ app.use((0, cors_1.default)({
 }));
 app.use("/user", user_1.userRoutes);
 app.use("/post", post_1.postRoutes);
+// global Catch
+app.use((err, req, res, next) => {
+    return (0, helper_1.unauthorizedError)(res, "unauthorized");
+});
 exports.default = app;

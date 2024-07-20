@@ -8,12 +8,15 @@ import {
 import { IUserState } from "../../utils/constants/interfaces";
 
 const initialState: IUserState = {
-  user: {
+  user: JSON.parse(localStorage.getItem("user") || "null") || {
     username: null,
     email: null,
     profilePic: null,
     name: null,
     userId: null,
+  },
+  authStatus: {
+    status: "idle",
   },
 };
 const userSlice = createSlice({
@@ -27,6 +30,7 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     // Handle loginUser
     builder.addCase(loginUser.fulfilled, (state, action) => {
+      localStorage.setItem("user", JSON.stringify(action.payload));
       state.user = action.payload;
     });
 
@@ -37,7 +41,15 @@ const userSlice = createSlice({
 
     // Handle check-auth
     builder.addCase(checkAuthStatus.fulfilled, (state, action) => {
+      localStorage.setItem("user", JSON.stringify(action.payload));
       state.user = action.payload;
+      state.authStatus.status = "succeeded";
+    });
+    builder.addCase(checkAuthStatus.pending, (state) => {
+      state.authStatus.status = "loading";
+    });
+    builder.addCase(checkAuthStatus.rejected, (state) => {
+      state.authStatus.status = "failed";
     });
 
     builder.addCase(logoutUser.fulfilled, (state) => {
@@ -48,7 +60,7 @@ const userSlice = createSlice({
         name: null,
         userId: null,
       };
-
+      localStorage.removeItem("user");
     });
   },
 });
