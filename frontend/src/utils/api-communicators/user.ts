@@ -1,8 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import {
-  ICreatePostData,
-  ICreatePostResponse,
   ICurrentUser,
   IErrorResponse,
   ILoginData,
@@ -67,31 +65,6 @@ export const signUpUser = createAsyncThunk<
     if (axios.isAxiosError(error) && error.response) {
       const responseError: IErrorResponse = {
         error: error.response.data.errors ?? error.response.data,
-        status: error.response.status,
-      };
-      return rejectWithValue(responseError);
-    }
-    throw error;
-  }
-});
-
-export const createPost = createAsyncThunk<
-  ICreatePostResponse,
-  ICreatePostData,
-  { rejectValue: IErrorResponse }
->("post/addPost", async (payload, { rejectWithValue }) => {
-  try {
-    const res = await axios.post("/post/addPost", payload, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    const data: ICreatePostResponse = await res.data.payload;
-    return { ...data };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const responseError: IErrorResponse = {
-        error: error.response.data,
         status: error.response.status,
       };
       return rejectWithValue(responseError);

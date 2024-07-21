@@ -8,16 +8,16 @@ import {
 import { IUserState } from "../../utils/constants/interfaces";
 
 const initialState: IUserState = {
-  user: JSON.parse(localStorage.getItem("user") || "null") || {
+  user: {
     username: null,
     email: null,
     profilePic: null,
     name: null,
     userId: null,
   },
-  authStatus: {
-    status: "idle",
-  },
+  authStatus: "idle",
+  logoutStatus: "idle",
+  isAuthenticated: false,
 };
 const userSlice = createSlice({
   name: "userSlice",
@@ -25,6 +25,13 @@ const userSlice = createSlice({
   reducers: {
     updateUserInfo: (state, action) => {
       state.user = action.payload;
+    },
+    resetUserState: (state) => {
+      localStorage.removeItem("user");
+      state.user = initialState.user;
+      state.authStatus = initialState.authStatus;
+      state.logoutStatus = initialState.logoutStatus;
+      state.isAuthenticated = initialState.isAuthenticated;
     },
   },
   extraReducers: (builder) => {
@@ -41,29 +48,31 @@ const userSlice = createSlice({
 
     // Handle check-auth
     builder.addCase(checkAuthStatus.fulfilled, (state, action) => {
-      localStorage.setItem("user", JSON.stringify(action.payload));
       state.user = action.payload;
-      state.authStatus.status = "succeeded";
+      state.authStatus = "succeeded";
+      state.isAuthenticated = true;
     });
     builder.addCase(checkAuthStatus.pending, (state) => {
-      state.authStatus.status = "loading";
+      state.authStatus = "loading";
+      state.isAuthenticated = false;
     });
     builder.addCase(checkAuthStatus.rejected, (state) => {
-      state.authStatus.status = "failed";
+      state.authStatus = "failed";
+      state.isAuthenticated = false;
     });
 
+    // Logout
+    builder.addCase(logoutUser.pending, (state) => {
+      state.logoutStatus = "loading";
+    });
+    builder.addCase(logoutUser.rejected, (state) => {
+      state.logoutStatus = "failed";
+    });
     builder.addCase(logoutUser.fulfilled, (state) => {
-      state.user = {
-        username: null,
-        email: null,
-        profilePic: null,
-        name: null,
-        userId: null,
-      };
-      localStorage.removeItem("user");
+      state.logoutStatus = "succeeded";
     });
   },
 });
 
-export const { updateUserInfo } = userSlice.actions;
+export const { updateUserInfo, resetUserState } = userSlice.actions;
 export default userSlice.reducer;

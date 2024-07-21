@@ -8,6 +8,7 @@ interface InputProps {
   validation: RegisterOptions;
   labelClass?: string
   textAreaClass?: string
+  value?: string
 }
 
 const TextAreaField: FC<InputProps> = ({
@@ -16,7 +17,8 @@ const TextAreaField: FC<InputProps> = ({
   placeholder,
   validation,
   labelClass,
-  textAreaClass
+  textAreaClass,
+  value
 }) => {
   const {
     register,
@@ -32,6 +34,7 @@ const TextAreaField: FC<InputProps> = ({
         placeholder={placeholder}
         name={name}
         className={textAreaClass}
+        value={value}
       />
       {errors[name] && errors[name].message && (
         <span className="error-span absolute w-full bottom-[-25px]">

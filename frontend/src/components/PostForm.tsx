@@ -1,10 +1,7 @@
 import { useGSAP } from "@gsap/react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../state/hooks";
 import { fade_up } from "../utils/animate";
-import { createPost } from "../utils/api-communicators/user";
 import { ICreatePostData } from "../utils/constants/interfaces";
 import { validationRules } from "../utils/constants/validation";
 import Button from "./Button";
@@ -13,26 +10,22 @@ import Loader from "./Loader";
 import PostImage from "./PostImage";
 import TextAreaField from "./TextAreaField";
 
-const PostForm = () => {
+interface postInterface {
+  func: (
+    data: ICreatePostData,
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  ) => void;
+}
+const PostForm: React.FC<postInterface> = ({ func }) => {
   const methods = useForm<ICreatePostData>();
-  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   useGSAP(() => {
     fade_up(".post-form");
   }, []);
 
   const onSubmit = async (data: ICreatePostData) => {
     setIsLoading(true);
-    const res = await dispatch(createPost(data));
-    if (createPost.fulfilled.match(res)) {
-      setIsLoading(false);
-      navigate("/");
-    }
-    if (createPost.rejected.match(res)) {
-      alert("error creating post.");
-      setIsLoading(false);
-    }
+    func(data, setIsLoading);
   };
   return (
     <FormProvider {...methods}>

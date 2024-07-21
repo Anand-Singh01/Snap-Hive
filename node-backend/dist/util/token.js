@@ -44,7 +44,6 @@ exports.createToken = createToken;
 const verifyToken = (req, res, next) => {
     try {
         const token = req.signedCookies[COOKIE_NAME];
-        console.log('token', token);
         if (!token || token.trim() == "") {
             (0, helper_1.unauthorizedError)(res, "unauthorized");
         }

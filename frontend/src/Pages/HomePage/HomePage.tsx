@@ -11,9 +11,9 @@ const HomePage = () => {
     fade_up(".home-heading");
   }, []);
   const posts = useAppSelector((state) => state.post.posts);
-  const status = useAppSelector((state) => state.post.status);
+  const status = useAppSelector((state) => state.post.fetchPostStatus);
   const dispatch = useAppDispatch();
-
+  const userId = useAppSelector((state) => state.user.user.userId);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -22,8 +22,10 @@ const HomePage = () => {
         alert("server Error");
       }
     };
-    fetchPosts();
-  }, [dispatch]);
+    if (posts.length === 0 && userId) {
+      fetchPosts();
+    }
+  }, [dispatch, posts.length, userId]);
 
   return (
     <section className="">

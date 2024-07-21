@@ -40,7 +40,9 @@ export interface IErrorState {
 
 export interface IUserState {
   user: ICurrentUser;
-  authStatus: IStatus
+  authStatus: status;
+  logoutStatus:status
+  isAuthenticated:boolean
 }
 
 export interface ICurrPage {
@@ -92,12 +94,14 @@ export interface ISinglePost {
   isLiked: boolean;
   isSaved: boolean;
 }
-export interface IPostInitialState extends IFetchRecentPostPostResponse, IStatus {
+export interface IPostInitialState extends IFetchRecentPostPostResponse {
+  fetchPostStatus: status;
+  updatePostStatus: status;
+  createPostStatus: status;
 }
 
-export interface IStatus{
-  status:'loading' | 'succeeded' | 'failed' | 'idle'
-}
+
+export type status = "loading" | "succeeded" | "failed" | "idle";
 
 // export interface ILikedPosts {
 //   likedPosts: Array<{

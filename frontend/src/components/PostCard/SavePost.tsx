@@ -35,7 +35,9 @@ const SavePost = (post: save) => {
     <div className="flex items-center gap-1">
       <div ref={divRef} className="cursor-pointer like" onClick={save_Click}>
         {isSaved ? (
-          <BookmarkIcon sx={{ color: "#c0c0e8 " }} />
+          <div className="hover:opacity-65">
+            <BookmarkIcon sx={{ color: "#c0c0e8 " }} />
+          </div>
         ) : (
           <BookmarkBorderOutlinedIcon sx={{ color: "#c3a0ff" }} />
         )}

@@ -1,17 +1,23 @@
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../state/hooks";
+import { resetPostState } from "../state/slices/postSlice";
+import { resetUserState } from "../state/slices/userSlice";
 import { logoutUser } from "../utils/api-communicators/user";
 
 const Logout = ({ title }: { title: string | "" }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  // const status = useAppSelector((state) => state.user.logoutStatus);
   const signOut = async () => {
-    const res = await dispatch(logoutUser());
-    if (logoutUser.fulfilled.match(res)) {
-      navigate("/login");
-    }
-    if (logoutUser.rejected.match(res)) {
+    try {
+      const res = await dispatch(logoutUser());
+      if (logoutUser.fulfilled.match(res)) {
+        dispatch(resetUserState());
+        dispatch(resetPostState());
+        navigate("/login");
+      }
+    } catch (error) {
       alert("server error");
     }
   };

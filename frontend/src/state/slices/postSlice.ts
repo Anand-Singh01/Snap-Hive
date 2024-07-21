@@ -1,11 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchRecentPosts } from "../../utils/api-communicators/post";
-import { logoutUser } from "../../utils/api-communicators/user";
+import {
+  createPost,
+  fetchRecentPosts,
+} from "../../utils/api-communicators/post";
 import { IPostInitialState } from "../../utils/constants/interfaces";
 
 const initialState: IPostInitialState = {
   posts: [],
-  status: "idle",
+  fetchPostStatus: "idle",
+  createPostStatus: "idle",
+  updatePostStatus: "idle"
 };
 
 const postSlice = createSlice({
@@ -31,11 +35,10 @@ const postSlice = createSlice({
         }
       }
     },
-
+    resetPostState: () => initialState,
     updateSave: (state, action) => {
       const { postId, type } = action.payload;
       const index = state.posts.findIndex((post) => post.id === postId);
-
       if (index !== -1) {
         switch (type) {
           case "save":
@@ -51,24 +54,33 @@ const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Fetch Posts
     builder.addCase(fetchRecentPosts.fulfilled, (state, action) => {
-      state.status = "succeeded";
+      state.fetchPostStatus = "succeeded";
       const data = action.payload;
-      state.posts.push(...data.posts);
+      state.posts = data.posts;
+      // state.posts.push(...data.posts);
     });
     builder.addCase(fetchRecentPosts.pending, (state) => {
-      state.status = "loading";
+      state.fetchPostStatus = "loading";
     });
     builder.addCase(fetchRecentPosts.rejected, (state) => {
-      state.status = "failed";
-      // alert("error");
+      state.fetchPostStatus = "failed";
+      alert("error");
     });
 
-    builder.addCase(logoutUser.fulfilled, (state) => {
-      state.posts.splice(0, state.posts.length);
+    // Create post
+    builder.addCase(createPost.fulfilled, (state) => {
+      state.createPostStatus = "succeeded";
+    });
+    builder.addCase(createPost.rejected, (state) => {
+      state.createPostStatus = "failed";
+    });
+    builder.addCase(createPost.pending, (state) => {
+      state.createPostStatus = "loading";
     });
   },
 });
 
-export const { updateLike, updateSave } = postSlice.actions;
+export const { updateLike, updateSave, resetPostState } = postSlice.actions;
 export default postSlice.reducer;

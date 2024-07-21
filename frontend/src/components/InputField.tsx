@@ -8,6 +8,7 @@ interface InputProps {
   type: string;
   inputClass?: string;
   labelClass?: string;
+  value?: string;
 }
 
 const InputField: FC<InputProps> = ({
@@ -18,6 +19,7 @@ const InputField: FC<InputProps> = ({
   validation,
   inputClass,
   labelClass,
+  value,
 }) => {
   const {
     register,
@@ -35,6 +37,7 @@ const InputField: FC<InputProps> = ({
         type={type}
         className={inputClass}
         name={name}
+        value={value}
       />
       {errors[name] && errors[name].message && (
         <span className="error-span absolute w-full bottom-[-25px]">

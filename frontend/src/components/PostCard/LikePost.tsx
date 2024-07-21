@@ -33,7 +33,9 @@ const LikePost: React.FC<Likes> = (post) => {
     <div className="flex items-center gap-1">
       <div ref={divRef} className="cursor-pointer like" onClick={like_Click}>
         {isLiked ? (
-          <FavoriteIcon sx={{ color: "red" }} />
+          <div className="hover:opacity-65">
+            <FavoriteIcon sx={{ color: "red" }} />
+          </div>
         ) : (
           <FavoriteBorderOutlinedIcon sx={{ color: "#c3a0ff" }} />
         )}
