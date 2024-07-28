@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkIfUserExists = exports.badRequest = exports.success = exports.unauthorizedError = exports.serverError = void 0;
+exports.checkIfPostExists = exports.checkIfUserExists = exports.badRequest = exports.success = exports.unauthorizedError = exports.serverError = void 0;
 const __1 = require("..");
 const serverError = (res, error) => {
     console.log(error);
@@ -49,3 +49,23 @@ const checkIfUserExists = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.checkIfUserExists = checkIfUserExists;
+const checkIfPostExists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { postId } = req.params;
+        const post = yield __1.prisma.post.findUnique({
+            where: {
+                id: postId,
+            },
+        });
+        if (post) {
+            next();
+        }
+        else {
+            return (0, exports.unauthorizedError)(res, "unauthorized");
+        }
+    }
+    catch (error) {
+        return (0, exports.serverError)(res, error);
+    }
+});
+exports.checkIfPostExists = checkIfPostExists;

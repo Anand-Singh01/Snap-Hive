@@ -20,9 +20,9 @@ export interface ISignUpResponse extends ILoginResponse {}
 
 export interface ICreatePostData {
   caption: string | null;
-  postImage: File | null;
+  postImage: File | null | string;
   location: string | null;
-  tags: string | null;
+  tags: ITag[];
 }
 
 export interface ICurrentUser {
@@ -41,8 +41,8 @@ export interface IErrorState {
 export interface IUserState {
   user: ICurrentUser;
   authStatus: status;
-  logoutStatus:status
-  isAuthenticated:boolean
+  logoutStatus: status;
+  isAuthenticated: boolean;
 }
 
 export interface ICurrPage {
@@ -57,7 +57,7 @@ export interface ILoader {
   isLoading: boolean;
 }
 
-export interface ICreatePostResponse {
+export interface msgResponse {
   msg: string;
 }
 export interface ILogoutResponse extends ICreatePostResponse {}
@@ -79,10 +79,6 @@ export interface IComment {
   commentBy: IPostedBy;
 }
 
-export interface ITag {
-  id: string;
-  tagName: string;
-}
 export interface ISinglePost {
   id: string;
   caption: string;
@@ -94,12 +90,12 @@ export interface ISinglePost {
   isLiked: boolean;
   isSaved: boolean;
 }
-export interface IPostInitialState extends IFetchRecentPostPostResponse {
+export interface IPostInitialState {
   fetchPostStatus: status;
   updatePostStatus: status;
   createPostStatus: status;
+  postsById: Record<string, IPost>
 }
-
 
 export type status = "loading" | "succeeded" | "failed" | "idle";
 
@@ -110,10 +106,24 @@ export type status = "loading" | "succeeded" | "failed" | "idle";
 // }
 
 export interface IFetchRecentPostPostResponse {
-  posts: Array<
-    ISinglePost & {
-      postedBy: IPostedBy;
-      tags: ITag[];
-    }
-  >;
+  posts: IPost[]
+}
+
+export interface IPost extends ISinglePost{
+  postedBy:IPostedBy,
+  tags:ITag[]
+}
+
+export interface ITag{
+  tagName:string
+}
+
+export interface IComment{
+  id:string,
+  comment:string,
+  commentedBy:IPostedBy
+}
+
+export interface ICreatePostResponse{
+  post:IPost
 }

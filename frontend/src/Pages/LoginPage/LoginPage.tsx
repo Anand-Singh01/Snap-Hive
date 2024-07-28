@@ -13,6 +13,7 @@ const LoginPage = () => {
     bounce(".login-form-container");
     fade_zoom(imgRef.current!);
   }, []);
+
   return (
     <section className="login-section">
       <BackgroundImage pattern={pattern} />

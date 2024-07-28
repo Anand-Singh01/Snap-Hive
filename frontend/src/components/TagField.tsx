@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { RegisterOptions, useFormContext } from "react-hook-form";
 
 interface InputProps {
@@ -10,9 +10,10 @@ interface InputProps {
   inputClass?: string;
   labelClass?: string;
   value?: string;
+  getFilledVal?: (text: string) => void;
 }
 
-const InputField: FC<InputProps> = ({
+const TagField: FC<InputProps> = ({
   name,
   label,
   type,
@@ -21,6 +22,7 @@ const InputField: FC<InputProps> = ({
   inputClass,
   labelClass,
   value,
+  getFilledVal,
 }) => {
   const {
     register,
@@ -29,11 +31,24 @@ const InputField: FC<InputProps> = ({
 
   const [inputValue, setInputValue] = useState(value || "");
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (value) {
       setInputValue(value);
     }
   }, [value]);
+
+  const keyPressed = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "," && getFilledVal) {
+      event.preventDefault();
+      getFilledVal((event.target as HTMLInputElement).value);
+      if (inputRef.current !== null) {
+        inputRef.current.value = "";
+        setInputValue("");
+      }
+    }
+  };
 
   return (
     <div className="inputDiv">
@@ -48,6 +63,8 @@ const InputField: FC<InputProps> = ({
         name={name}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={keyPressed}
+        ref={inputRef}
       />
       {errors[name] && errors[name].message && (
         <span className="error-span absolute w-full bottom-[-25px]">
@@ -58,4 +75,4 @@ const InputField: FC<InputProps> = ({
   );
 };
 
-export default InputField;
+export default TagField;

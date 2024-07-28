@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { RegisterOptions, useFormContext } from "react-hook-form";
 
 interface InputProps {
@@ -6,9 +6,9 @@ interface InputProps {
   label: string;
   placeholder: string;
   validation: RegisterOptions;
-  labelClass?: string
-  textAreaClass?: string
-  value?: string
+  labelClass?: string;
+  textAreaClass?: string;
+  value?: string;
 }
 
 const TextAreaField: FC<InputProps> = ({
@@ -18,12 +18,14 @@ const TextAreaField: FC<InputProps> = ({
   validation,
   labelClass,
   textAreaClass,
-  value
+  value,
 }) => {
   const {
     register,
     formState: { errors },
   } = useFormContext();
+
+  const [input, setInput] = useState(value || "");
   return (
     <div className="textAreaDiv">
       <label className={labelClass} htmlFor={name}>
@@ -34,7 +36,8 @@ const TextAreaField: FC<InputProps> = ({
         placeholder={placeholder}
         name={name}
         className={textAreaClass}
-        value={value}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
       {errors[name] && errors[name].message && (
         <span className="error-span absolute w-full bottom-[-25px]">

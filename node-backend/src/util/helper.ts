@@ -41,3 +41,26 @@ export const checkIfUserExists = async (
     return serverError(res, error);
   }
 };
+
+export const checkIfPostExists = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+    if (post) {
+      next();
+    } else {
+      return unauthorizedError(res, "unauthorized");
+    }
+  } catch (error) {
+    return serverError(res, error);
+  }
+};

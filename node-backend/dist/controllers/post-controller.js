@@ -23,43 +23,251 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLikedPosts = exports.updateSaveOnAPost = exports.updateLikeOnAPost = exports.recentPosts = exports.addPost = void 0;
+exports.getComments = exports.getLikedPosts = exports.updateSaveOnAPost = exports.updateLikeOnAPost = exports.recentPosts = exports.addPost = exports.updatePost = exports.getPost = void 0;
 const __1 = require("..");
 const dataUri_1 = __importDefault(require("../middleware/dataUri"));
 const cloudinary_1 = __importDefault(require("../util/cloudinary"));
 const helper_1 = require("../util/helper");
-const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, email } = res.locals.jwtData;
-        const { caption, location } = req.body;
-        const user = yield __1.prisma.user.findFirst({
+        const data = res.locals.jwtData;
+        const { postId } = req.params;
+        const post = yield __1.prisma.post.findFirst({
             where: {
-                id,
-                email,
+                id: postId,
             },
-        });
-        if (user) {
-            const file = req.file;
-            if (file) {
-                const fileUri = (0, dataUri_1.default)(file);
-                const myCloud = yield cloudinary_1.default.uploader.upload(fileUri.content);
-                const post = yield __1.prisma.post.create({
-                    data: {
-                        postImage: myCloud.secure_url,
-                        caption,
-                        location,
-                        postedBy: {
-                            connect: {
-                                id,
+            select: {
+                id: true,
+                caption: true,
+                location: true,
+                postImage: true,
+                totalLikes: true,
+                totalComments: true,
+                createdAt: true,
+                postedBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profile: {
+                            select: {
+                                id: true,
+                                profilePic: true,
                             },
                         },
                     },
-                });
-                return (0, helper_1.success)(res, { msg: "success" });
-            }
-            else {
-                throw new Error("No file uploaded");
-            }
+                },
+                likedBy: {
+                    where: {
+                        id: data.id,
+                    },
+                },
+                savedBy: {
+                    where: {
+                        id: data.id,
+                    },
+                },
+                tags: {
+                    select: {
+                        tagName: true,
+                    },
+                },
+            },
+        });
+        if (post) {
+            const { likedBy, savedBy } = post, rest = __rest(post, ["likedBy", "savedBy"]);
+            const newPost = Object.assign(Object.assign({}, rest), { isLiked: likedBy.length > 0, isSaved: savedBy.length > 0 });
+        }
+    }
+    catch (error) {
+        return (0, helper_1.serverError)(res, error);
+    }
+});
+exports.getPost = getPost;
+const updatePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = res.locals.jwtData;
+        const { postId } = req.params;
+        const file = req.file;
+        const { caption, location, tags } = req.body;
+        const tagOperations = tags && tags.length > 0
+            ? tags.map(({ tagName }) => ({
+                where: { tagName },
+                create: { tagName },
+            }))
+            : undefined;
+        const existingTags = yield __1.prisma.post.findFirst({
+            where: {
+                id: postId,
+            },
+            select: {
+                tags: true,
+            },
+        });
+        const tagsToBeDeleted = existingTags === null || existingTags === void 0 ? void 0 : existingTags.tags.filter((existingTag) => !(tags === null || tags === void 0 ? void 0 : tags.some((newTag) => newTag.tagName === existingTag.tagName)));
+        if (!file) {
+            const post = yield __1.prisma.post.update({
+                where: { id: postId },
+                data: {
+                    caption,
+                    location,
+                    tags: { connectOrCreate: tagOperations, disconnect: tagsToBeDeleted },
+                },
+                select: {
+                    id: true,
+                    caption: true,
+                    location: true,
+                    postImage: true,
+                    totalLikes: true,
+                    totalComments: true,
+                    createdAt: true,
+                    postedBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    profilePic: true,
+                                },
+                            },
+                        },
+                    },
+                    tags: {
+                        select: {
+                            tagName: true,
+                        },
+                    },
+                    likedBy: {
+                        where: {
+                            id: data.id,
+                        },
+                    },
+                    savedBy: {
+                        where: {
+                            id: data.id,
+                        },
+                    },
+                },
+            });
+            const { likedBy, savedBy } = post, rest = __rest(post, ["likedBy", "savedBy"]);
+            const newPost = Object.assign(Object.assign({}, rest), { isLiked: likedBy.length > 0, isSaved: savedBy.length > 0 });
+            return (0, helper_1.success)(res, { post: newPost });
+        }
+        else {
+            const fileUri = (0, dataUri_1.default)(file);
+            const myCloud = yield cloudinary_1.default.uploader.upload(fileUri.content);
+            const post = yield __1.prisma.post.update({
+                where: { id: postId },
+                data: {
+                    postImage: myCloud.secure_url,
+                    caption,
+                    location,
+                    tags: { connectOrCreate: tagOperations, disconnect: tagsToBeDeleted },
+                },
+                select: {
+                    id: true,
+                    caption: true,
+                    location: true,
+                    postImage: true,
+                    totalLikes: true,
+                    totalComments: true,
+                    createdAt: true,
+                    postedBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    profilePic: true,
+                                },
+                            },
+                        },
+                    },
+                    tags: {
+                        select: {
+                            tagName: true,
+                        },
+                    },
+                    likedBy: {
+                        where: {
+                            id: data.id,
+                        },
+                    },
+                    savedBy: {
+                        where: {
+                            id: data.id,
+                        },
+                    },
+                },
+            });
+            const { likedBy, savedBy } = post, rest = __rest(post, ["likedBy", "savedBy"]);
+            const newPost = Object.assign(Object.assign({}, rest), { isLiked: likedBy.length > 0, isSaved: savedBy.length > 0 });
+            return (0, helper_1.success)(res, { post: newPost });
+        }
+    }
+    catch (error) {
+        return (0, helper_1.serverError)(res, error);
+    }
+});
+exports.updatePost = updatePost;
+const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id, email } = res.locals.jwtData;
+        const { caption, location, tags } = req.body;
+        const file = req.file;
+        if (file) {
+            const fileUri = (0, dataUri_1.default)(file);
+            const myCloud = yield cloudinary_1.default.uploader.upload(fileUri.content);
+            const tagOperations = tags && tags.length > 0
+                ? tags.map(({ tagName }) => ({
+                    where: { tagName },
+                    create: { tagName },
+                }))
+                : undefined;
+            const post = yield __1.prisma.post.create({
+                data: {
+                    postImage: myCloud.secure_url,
+                    caption,
+                    location,
+                    postedBy: {
+                        connect: {
+                            id,
+                        },
+                    },
+                    tags: {
+                        connectOrCreate: tagOperations,
+                    },
+                },
+                select: {
+                    id: true,
+                    caption: true,
+                    location: true,
+                    postImage: true,
+                    totalLikes: true,
+                    totalComments: true,
+                    createdAt: true,
+                    postedBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    profilePic: true,
+                                },
+                            },
+                        },
+                    },
+                    tags: {
+                        select: {
+                            tagName: true,
+                        },
+                    },
+                },
+            });
+            const newPost = Object.assign(Object.assign({}, post), { isLiked: false, isSaved: false });
+            return (0, helper_1.success)(res, { post: newPost });
         }
     }
     catch (error) {
@@ -107,7 +315,6 @@ const recentPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 },
                 tags: {
                     select: {
-                        id: true,
                         tagName: true,
                     },
                 },
@@ -280,3 +487,38 @@ const getLikedPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getLikedPosts = getLikedPosts;
+const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { postId } = req.params;
+        const comments = __1.prisma.comment.findMany({
+            where: {
+                postId,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            take: 10,
+            select: {
+                id: true,
+                comment: true,
+                commentBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profile: {
+                            select: {
+                                id: true,
+                                profilePic: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        return (0, helper_1.success)(res, { comments });
+    }
+    catch (error) {
+        return (0, helper_1.serverError)(res, error);
+    }
+});
+exports.getComments = getComments;

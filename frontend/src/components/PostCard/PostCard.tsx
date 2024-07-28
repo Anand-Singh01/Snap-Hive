@@ -1,9 +1,9 @@
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { useState } from "react";
-import { useAppSelector } from "../../state/hooks";
+// import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { useRef } from "react";
+import { Link } from "react-router-dom";
+import { scaleDownPost, scaleUpPost } from "../../utils/animate";
 import { IPostedBy, ISinglePost, ITag } from "../../utils/constants/interfaces";
 import CardInfo from "./CardInfo";
-import EditPost from "./EditPost";
 import LikePost from "./LikePost";
 import PostCaption_tag from "./PostCaption_tag";
 import SavePost from "./SavePost";
@@ -12,58 +12,78 @@ interface PostCardProps {
     postedBy: IPostedBy;
     tags: ITag[];
   };
+  index: number;
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const id = useAppSelector((state) => state.user.user.userId);
-  const [editMode, setEditMode] = useState(false);
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const cardHover = (command: string) => {
+    if (command === "scaleUp") {
+      scaleUpPost(cardRef.current!);
+    } else if (command === "scaleDown") {
+      scaleDownPost(cardRef.current!);
+    }
+  };
+  // const imageHover = (command: string) => {
+  //   if (command == "scaleUp") {
+  //     scaleUp(imgRef.current!);
+  //   } else {
+  //     scaleDown(imgRef.current!);
+  //   }
+  // };
 
   return (
     <>
-      {editMode ? (
-        <EditPost postId={post.caption} />
-      ) : (
-        <div className="bg-gray-900 rounded-lg w-[90%] sm:w-[50%] max-w-[350px]">
-          <div className="flex flex-col gap-3 sm:p-[1rem] p-[0.5rem]">
-            <div className="flex items-center justify-between">
-              <div className="flex gap-3 items-center">
-                <CardInfo
-                  profilePic={post.postedBy.profile.profilePic}
-                  postLocation={post.location}
-                  createdAt={post.createdAt}
-                  postedBy={post.postedBy.name}
-                />
-              </div>
-              {id === post.postedBy.id ? (
-                <div
-                  onClick={() => setEditMode(true)}
-                  className="cursor-pointer"
-                >
-                  <EditOutlinedIcon
-                    sx={{ color: "#c3a0ff", width: "22px", height: "22px" }}
-                  />
-                </div>
-              ) : (
-                <></>
-              )}
-            </div>
-            <div>
-              <PostCaption_tag caption={post.caption} tags={post.tags} />
+      <Link
+        to={`/post-details/${post.id}`}
+        ref={cardRef}
+        onMouseEnter={() => cardHover("scaleUp")}
+        onMouseLeave={() => cardHover("scaleDown")}
+        className="bg-gray-900 cursor-pointer rounded-lg w-[90%] sm:w-[50%] max-w-[350px]"
+      >
+        <div className="flex flex-col gap-3 sm:p-[1rem] p-[0.5rem]">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-3 items-center">
+              <CardInfo
+                profilePic={post.postedBy.profile.profilePic}
+                postLocation={post.location}
+                createdAt={post.createdAt}
+                postedBy={post.postedBy.name}
+              />
             </div>
           </div>
-          <div className="post-image-container">
-            <img className="post-image" src={post.postImage} alt="postImage" />
+          <div>
+            <PostCaption_tag caption={post.caption} tags={post.tags} />
           </div>
-          <div className="p-3 flex justify-between items-center">
+        </div>
+        <div className="post-image-container ">
+          <img
+            ref={imgRef}
+            className="post-image"
+            src={post.postImage}
+            alt="postImage"
+          />
+        </div>
+        <div>
+          <div className="px-3 pt-1">
+            {post.totalComments > 0 && <p>{post.totalComments} comments</p>}
+            <p className="hover:underline">
+              <Link to={""}>Add a comment</Link>
+            </p>
+          </div>
+        </div>
+        <div className="p-3 flex justify-between items-center">
+          <div className="flex gap-[2rem] items-center">
             <LikePost
               totalLikes={post.totalLikes}
               isLiked={post.isLiked}
               postId={post.id}
             />
-            <SavePost isSaved={post.isSaved} postId={post.id} />
           </div>
+          <SavePost isSaved={post.isSaved} postId={post.id} />
         </div>
-      )}
+      </Link>
     </>
   );
 };

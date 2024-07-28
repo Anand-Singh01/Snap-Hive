@@ -30,7 +30,7 @@ const LoginForm = () => {
           alert(error.msg);
         }
       } else {
-        alert("an error occurred please try again.");
+        alert("An error occurred, please try again.");
       }
     }
   };
@@ -65,12 +65,12 @@ const LoginForm = () => {
             {isLoading ? <Loader /> : "Sign in"}
           </Button>
           <p>OR</p>
-          <Button type="submit" className="btn-guest">
+          <Button type="button" className="btn-guest">
             Explore as Guest
           </Button>
 
           <p className="signup-text">
-            Don’t have an account yet? <Link to={"/signUp"}>SignUp</Link>
+            Don’t have an account yet? <Link to={"/signUp"}>Sign Up</Link>
           </p>
         </div>
       </form>

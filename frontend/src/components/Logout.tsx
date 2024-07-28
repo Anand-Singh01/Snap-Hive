@@ -8,7 +8,6 @@ import { logoutUser } from "../utils/api-communicators/user";
 const Logout = ({ title }: { title: string | "" }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // const status = useAppSelector((state) => state.user.logoutStatus);
   const signOut = async () => {
     try {
       const res = await dispatch(logoutUser());

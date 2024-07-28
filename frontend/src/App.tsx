@@ -28,7 +28,7 @@ function App() {
             <Route path="/all-users" element={<AllUsers />} />
             <Route path="/create-post" element={<CreatePost />} />
             <Route path="/update-post/:id" element={<EditPost />} />
-            <Route path="/post/:id" element={<PostDetails />} />
+            <Route path="/post-details/:id" element={<PostDetails />} />
             <Route path="/profile/:id/*" element={<Profile />} />
             <Route path="/update-profile/:id" element={<UpdateProfile />} />
           </Route>

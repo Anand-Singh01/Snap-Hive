@@ -1,8 +1,8 @@
 import SkeletonLoader from "../SkeletonLoader";
 
-const PostSkeleton = ({key}:{key:number}) => {
+const PostSkeleton = () => {
   return (
-    <div key={key} className="flex flex-col gap-3 opacity-40">
+    <div className="flex flex-col gap-3 opacity-40">
       <div className="flex gap-1 items-center">
         <SkeletonLoader
           type="circular"

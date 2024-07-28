@@ -19,8 +19,8 @@ const SavePost = (post: save) => {
   const save_Click = async () => {
     bounce2(divRef.current);
     isSaved
-      ? dispatch(updateSave({ type: "remove", postId: post.postId }))
-      : dispatch(updateSave({ type: "add", postId: post.postId }));
+      ? dispatch(updateSave({ type: "unSave", postId: post.postId }))
+      : dispatch(updateSave({ type: "save", postId: post.postId }));
     setIsSaved(!isSaved);
     try {
       const res = await dispatch(saveAPost({ postId: post.postId }));

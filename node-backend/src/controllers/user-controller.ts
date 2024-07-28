@@ -27,7 +27,7 @@ export const userLogin = async (req: Request, res: Response) => {
       updateTokenAndCookie(res, { id: user.id, email }, "7d");
       success(res, {
         username: user.username,
-        userId:user.id,
+        userId: user.id,
         email,
         name: user.name,
         profilePic: user.profile?.profilePic || null,
@@ -69,7 +69,7 @@ export const userSignUp = async (req: Request, res: Response) => {
       success(res, {
         username,
         email,
-        userId:user.id,
+        userId: user.id,
         name,
         profilePic: user.profile?.profilePic || null,
       });
@@ -95,7 +95,7 @@ export const authStatus = async (req: Request, res: Response) => {
       success(res, {
         username: user.username,
         email: user.email,
-        userId:user.id,
+        userId: user.id,
         name: user.name,
         profilePic: user.profile?.profilePic || null,
       });

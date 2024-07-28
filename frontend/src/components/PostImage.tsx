@@ -1,12 +1,17 @@
 import { useGSAP } from "@gsap/react";
 import PhotoLibraryOutlinedIcon from "@mui/icons-material/PhotoLibraryOutlined";
 import RemoveCircleOutlineOutlinedIcon from "@mui/icons-material/RemoveCircleOutlineOutlined";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { fade_up } from "../utils/animate";
-const PostImage = () => {
+
+interface AlreadyUploadedImage {
+  prevImage?: string;
+}
+const PostImage: React.FC<AlreadyUploadedImage> = ({ prevImage }) => {
   const [image, setImage] = useState<File | null>(null);
   const labelRef = useRef<HTMLLabelElement>(null);
+  const [oldImage, setOldImage] = useState<string | undefined>(prevImage);
   const {
     register,
     setValue,
@@ -17,12 +22,14 @@ const PostImage = () => {
   };
 
   const updateImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOldImage(undefined);
     const file = e.target.files?.[0] || null;
     setImage(file);
     setValue("postImage", file, { shouldValidate: true });
   };
 
   const removeImage = () => {
+    setOldImage(undefined);
     setImage(null);
   };
 
@@ -32,22 +39,26 @@ const PostImage = () => {
   }, [image]);
 
   useEffect(() => {
-    register("postImage", {
-      required: "Post image is required",
-      validate: {
-        fileFormat: (value) =>
-          (value &&
-            (value.type === "image/jpeg" || value.type === "image/png")) ||
-          "Only JPEG or PNG files are allowed",
-      },
-    });
-  }, [register]);
+    if (!oldImage) {
+      register("postImage", {
+        required: "Post image is required",
+        validate: {
+          fileFormat: (value) =>
+            (value &&
+              (value.type === "image/jpeg" || value.type === "image/png")) ||
+            "Only JPEG or PNG files are allowed",
+        },
+      });
+    } else {
+      setValue("postImage", oldImage, { shouldValidate: false });
+    }
+  }, [register, oldImage, setValue, image]);
 
   return (
     <div>
       <div className="flex justify-between items-center">
         <p className="post-form-label">Add a Photo</p>
-        {image ? (
+        {image || oldImage ? (
           <div onClick={removeImage} className="remove-logo">
             <RemoveCircleOutlineOutlinedIcon />
           </div>
@@ -56,7 +67,7 @@ const PostImage = () => {
         )}
       </div>
       <div onClick={openFileManager} className="relative cursor-pointer">
-        {!image ? (
+        {!image && !oldImage ? (
           <div className="image-upload-marker">
             <div className="flex flex-col items-center gap-4">
               <PhotoLibraryOutlinedIcon
@@ -76,7 +87,9 @@ const PostImage = () => {
           <></>
         )}
         <img
-          src={image ? URL.createObjectURL(image) : undefined}
+          src={
+            image ? URL.createObjectURL(image) : oldImage ? oldImage : undefined
+          }
           className="custom-file-upload"
         ></img>
 
@@ -91,7 +104,9 @@ const PostImage = () => {
           <input onChange={updateImage} id="file-upload" type="file" />
         </div>
       </div>
-      {image && <p className="info-replace">Click photo to replace</p>}
+      {(image || oldImage) && (
+        <p className="info-replace">Click photo to replace</p>
+      )}
       {errors.postImage && (
         <p className="text-red-500">{errors.postImage.message?.toString()}</p>
       )}

@@ -10,7 +10,8 @@ const HomePage = () => {
   useGSAP(() => {
     fade_up(".home-heading");
   }, []);
-  const posts = useAppSelector((state) => state.post.posts);
+
+  const posts = useAppSelector((state) => state.post.postsById);
   const status = useAppSelector((state) => state.post.fetchPostStatus);
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.user.user.userId);
@@ -22,21 +23,26 @@ const HomePage = () => {
         alert("server Error");
       }
     };
-    if (posts.length === 0 && userId) {
+    if (userId && status === "idle") {
       fetchPosts();
     }
-  }, [dispatch, posts.length, userId]);
+    // return () => {
+    //   // Cleanup function: Reset the post status to idle when the component unmounts or dependencies change.
+    //   dispatch(resetPostStatus("fetch"));
+    // };
+  }, [dispatch, userId, status]);
 
   return (
     <section className="">
       <h1 className="create-post-title home-heading">Home Feed</h1>
-      <div className="posts-container posts-container-md">
+      <div className="posts-container posts-container-md relative">
         {status === "loading"
           ? [1, 2, 3, 4].map((_, index) => <PostSkeleton key={index} />)
-          : posts.map((post) => <PostCard key={post.id} post={post} />)}
+          : Object.values(posts).map((post, index) => (
+              <PostCard index={index} key={post.id} post={post} />
+            ))}
       </div>
     </section>
   );
 };
-
 export default HomePage;

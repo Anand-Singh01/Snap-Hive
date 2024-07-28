@@ -1,42 +1,272 @@
-// controllers/post-controller.ts
 import { Request, Response } from "express";
 import { prisma } from "..";
 import getDataUri from "../middleware/dataUri";
 import cloudinary from "../util/cloudinary";
 import { serverError, success, unauthorizedError } from "../util/helper";
-import { ITokenData } from "../util/interfaces";
+import { IPostData, ITokenData } from "../util/interfaces";
+
+export const getPost = async (req: Request, res: Response) => {
+  try {
+    const data: ITokenData = res.locals.jwtData;
+    const { postId } = req.params;
+    const post = await prisma.post.findFirst({
+      where: {
+        id: postId,
+      },
+      select: {
+        id: true,
+        caption: true,
+        location: true,
+        postImage: true,
+        totalLikes: true,
+        totalComments: true,
+        createdAt: true,
+        postedBy: {
+          select: {
+            id: true,
+            name: true,
+            profile: {
+              select: {
+                id: true,
+                profilePic: true,
+              },
+            },
+          },
+        },
+        likedBy: {
+          where: {
+            id: data.id,
+          },
+        },
+        savedBy: {
+          where: {
+            id: data.id,
+          },
+        },
+        tags: {
+          select: {
+            tagName: true,
+          },
+        },
+      },
+    });
+    if (post) {
+      const { likedBy, savedBy, ...rest } = post;
+      const newPost = {
+        ...rest,
+        isLiked: likedBy.length > 0,
+        isSaved: savedBy.length > 0,
+      };
+    }
+  } catch (error) {
+    return serverError(res, error);
+  }
+};
+
+export const updatePost = async (req: Request, res: Response) => {
+  try {
+    const data: ITokenData = res.locals.jwtData;
+    const { postId } = req.params;
+    const file: Express.Multer.File | undefined = req.file;
+    const { caption, location, tags }: IPostData = req.body;
+    const tagOperations =
+      tags && tags.length > 0
+        ? tags.map(({ tagName }) => ({
+            where: { tagName },
+            create: { tagName },
+          }))
+        : undefined;
+
+    const existingTags = await prisma.post.findFirst({
+      where: {
+        id: postId,
+      },
+      select: {
+        tags: true,
+      },
+    });
+
+    const tagsToBeDeleted = existingTags?.tags!.filter(
+      (existingTag) =>
+        !tags?.some((newTag) => newTag.tagName === existingTag.tagName)
+    );
+
+    if (!file) {
+      const post = await prisma.post.update({
+        where: { id: postId },
+        data: {
+          caption,
+          location,
+          tags: { connectOrCreate: tagOperations, disconnect: tagsToBeDeleted },
+        },
+        select: {
+          id: true,
+          caption: true,
+          location: true,
+          postImage: true,
+          totalLikes: true,
+          totalComments: true,
+          createdAt: true,
+          postedBy: {
+            select: {
+              id: true,
+              name: true,
+              profile: {
+                select: {
+                  id: true,
+                  profilePic: true,
+                },
+              },
+            },
+          },
+          tags: {
+            select: {
+              tagName: true,
+            },
+          },
+          likedBy: {
+            where: {
+              id: data.id,
+            },
+          },
+          savedBy: {
+            where: {
+              id: data.id,
+            },
+          },
+        },
+      });
+      const { likedBy, savedBy, ...rest } = post;
+      const newPost = {
+        ...rest,
+        isLiked: likedBy.length > 0,
+        isSaved: savedBy.length > 0,
+      };
+      return success(res, { post: newPost });
+    } else {
+      const fileUri = getDataUri(file);
+      const myCloud = await cloudinary.uploader.upload(fileUri.content);
+
+      const post = await prisma.post.update({
+        where: { id: postId },
+        data: {
+          postImage: myCloud.secure_url,
+          caption,
+          location,
+          tags: { connectOrCreate: tagOperations, disconnect: tagsToBeDeleted },
+        },
+        select: {
+          id: true,
+          caption: true,
+          location: true,
+          postImage: true,
+          totalLikes: true,
+          totalComments: true,
+          createdAt: true,
+          postedBy: {
+            select: {
+              id: true,
+              name: true,
+              profile: {
+                select: {
+                  id: true,
+                  profilePic: true,
+                },
+              },
+            },
+          },
+          tags: {
+            select: {
+              tagName: true,
+            },
+          },
+          likedBy: {
+            where: {
+              id: data.id,
+            },
+          },
+          savedBy: {
+            where: {
+              id: data.id,
+            },
+          },
+        },
+      });
+      const { likedBy, savedBy, ...rest } = post;
+      const newPost = {
+        ...rest,
+        isLiked: likedBy.length > 0,
+        isSaved: savedBy.length > 0,
+      };
+      return success(res, { post: newPost });
+    }
+  } catch (error) {
+    return serverError(res, error);
+  }
+};
 
 export const addPost = async (req: Request, res: Response) => {
   try {
     const { id, email } = res.locals.jwtData;
-    const { caption, location } = req.body;
-    const user = await prisma.user.findFirst({
-      where: {
-        id,
-        email,
-      },
-    });
-    if (user) {
-      const file: Express.Multer.File | undefined = req.file;
-      if (file) {
-        const fileUri = getDataUri(file);
-        const myCloud = await cloudinary.uploader.upload(fileUri.content);
-        const post = await prisma.post.create({
-          data: {
-            postImage: myCloud.secure_url,
-            caption,
-            location,
-            postedBy: {
-              connect: {
-                id,
+    const { caption, location, tags }: IPostData = req.body;
+
+    const file: Express.Multer.File | undefined = req.file;
+    if (file) {
+      const fileUri = getDataUri(file);
+      const myCloud = await cloudinary.uploader.upload(fileUri.content);
+
+      const tagOperations =
+        tags && tags.length > 0
+          ? tags.map(({ tagName }) => ({
+              where: { tagName },
+              create: { tagName },
+            }))
+          : undefined;
+
+      const post = await prisma.post.create({
+        data: {
+          postImage: myCloud.secure_url,
+          caption,
+          location,
+          postedBy: {
+            connect: {
+              id,
+            },
+          },
+          tags: {
+            connectOrCreate: tagOperations,
+          },
+        },
+        select: {
+          id: true,
+          caption: true,
+          location: true,
+          postImage: true,
+          totalLikes: true,
+          totalComments: true,
+          createdAt: true,
+          postedBy: {
+            select: {
+              id: true,
+              name: true,
+              profile: {
+                select: {
+                  id: true,
+                  profilePic: true,
+                },
               },
             },
           },
-        });
-        return success(res, { msg: "success" });
-      } else {
-        throw new Error("No file uploaded");
-      }
+          tags: {
+            select: {
+              tagName: true,
+            },
+          },
+        },
+      });
+
+      const newPost = { ...post, isLiked: false, isSaved: false };
+      return success(res, { post: newPost });
     }
   } catch (error) {
     return serverError(res, error);
@@ -83,7 +313,6 @@ export const recentPosts = async (req: Request, res: Response) => {
         },
         tags: {
           select: {
-            id: true,
             tagName: true,
           },
         },
@@ -251,6 +480,41 @@ export const getLikedPosts = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.log(error);
+    return serverError(res, error);
+  }
+};
+
+export const getComments = async (req: Request, res: Response) => {
+  try {
+    const { postId } = req.params;
+
+    const comments = prisma.comment.findMany({
+      where: {
+        postId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 10,
+      select: {
+        id: true,
+        comment: true,
+        commentBy: {
+          select: {
+            id: true,
+            name: true,
+            profile: {
+              select: {
+                id: true,
+                profilePic: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return success(res, { comments });
+  } catch (error) {
     return serverError(res, error);
   }
 };

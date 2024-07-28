@@ -55,10 +55,10 @@ export const validationRules = {
   },
 
   tags: {
-    maxLength: {
-      value: 50,
-      message: "tags: max 50 character.",
-    },
+    // maxLength: {
+    //   value: 50,
+    //   message: "tags: max 50 character.",
+    // },
   },
 
   image:{

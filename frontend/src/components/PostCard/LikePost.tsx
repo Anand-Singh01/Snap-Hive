@@ -13,13 +13,21 @@ interface Likes {
 const LikePost: React.FC<Likes> = (post) => {
   const dispatch = useAppDispatch();
   const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [totalLikes, setTotalLikes] = useState(post.totalLikes);
+
   const divRef = useRef<HTMLDivElement>(null);
+
   const like_Click = async () => {
     bounce2(divRef.current);
-    isLiked
-      ? dispatch(updateLike({ type: "remove", postId: post.postId }))
-      : dispatch(updateLike({ type: "add", postId: post.postId }));
     setIsLiked(!isLiked);
+    if (isLiked) {
+      dispatch(updateLike({ type: "remove", postId: post.postId }));
+      setTotalLikes(totalLikes - 1);
+    } else {
+      dispatch(updateLike({ type: "add", postId: post.postId }));
+      setTotalLikes(totalLikes + 1);
+    }
+
     try {
       const res = await dispatch(likeAPost({ postId: post.postId }));
       if (likeAPost.rejected.match(res)) {
@@ -40,7 +48,7 @@ const LikePost: React.FC<Likes> = (post) => {
           <FavoriteBorderOutlinedIcon sx={{ color: "#c3a0ff" }} />
         )}
       </div>
-      <p className="font-semibold">{post.totalLikes}</p>
+      <p className="font-semibold">{totalLikes}</p>
     </div>
   );
 };

@@ -153,6 +153,11 @@
   object-fit: cover; /* Ensures the image covers the container without stretching */
 }
 
+/* EditPost */
+.postFormContainer{
+  height: calc(100vh - 120px);
+}
+
 .posts-container {
   display: flex;
   flex-direction: column;

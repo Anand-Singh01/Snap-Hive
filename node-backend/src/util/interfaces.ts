@@ -12,3 +12,9 @@ export interface ISignUpData{
     email: string
     password: string
 }
+
+export interface IPostData{
+    caption : string,
+    location: string | null
+    tags:[{tagName:string}]
+}

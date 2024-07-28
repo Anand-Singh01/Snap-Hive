@@ -16,6 +16,7 @@ const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: ISignUpData) => {
+    console.log(data);
     setIsLoading(true);
     const result = await dispatch(signUpUser(data));
     if (signUpUser.fulfilled.match(result)) {
