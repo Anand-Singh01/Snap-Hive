@@ -6,14 +6,14 @@ import { updateLike } from "../../state/slices/postSlice";
 import { bounce2 } from "../../utils/animate";
 import { likeAPost } from "../../utils/api-communicators/post";
 interface Likes {
-  totalLikes: number;
+  // totalLikes: number;
   postId: string;
   isLiked: boolean;
 }
 const LikePost: React.FC<Likes> = (post) => {
   const dispatch = useAppDispatch();
   const [isLiked, setIsLiked] = useState(post.isLiked);
-  const [totalLikes, setTotalLikes] = useState(post.totalLikes);
+  // const [totalLikes, setTotalLikes] = useState(post.totalLikes);
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -22,10 +22,10 @@ const LikePost: React.FC<Likes> = (post) => {
     setIsLiked(!isLiked);
     if (isLiked) {
       dispatch(updateLike({ type: "remove", postId: post.postId }));
-      setTotalLikes(totalLikes - 1);
+      // setTotalLikes(totalLikes - 1);
     } else {
       dispatch(updateLike({ type: "add", postId: post.postId }));
-      setTotalLikes(totalLikes + 1);
+      // setTotalLikes(totalLikes + 1);
     }
 
     try {
@@ -38,7 +38,7 @@ const LikePost: React.FC<Likes> = (post) => {
     }
   };
   return (
-    <div className="flex items-center gap-1">
+    <div className="gap-1">
       <div ref={divRef} className="cursor-pointer like" onClick={like_Click}>
         {isLiked ? (
           <div className="hover:opacity-65">
@@ -48,7 +48,7 @@ const LikePost: React.FC<Likes> = (post) => {
           <FavoriteBorderOutlinedIcon sx={{ color: "#c3a0ff" }} />
         )}
       </div>
-      <p className="font-semibold">{totalLikes}</p>
+      {/* <p className="font-semibold">{totalLikes}</p> */}
     </div>
   );
 };

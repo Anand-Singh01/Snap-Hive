@@ -161,7 +161,7 @@
 .posts-container {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+
   align-items: center;
   width: 100%;
   overflow-y: auto;

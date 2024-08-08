@@ -24,6 +24,7 @@ model User {
   likedPosts   Post[]    @relation("likedByRelation")
   comments     Comment[] @relation("commentByRelation")
   savedPosts   Post[]    @relation("savedByRelation")
+  reply        Reply[]   @relation("replyByRelation")
   profile      Profile?
 }
 
@@ -49,11 +50,23 @@ model Tag {
 }
 
 model Comment {
-  id            String @id @default(uuid())
+  id            String   @id @default(uuid())
   comment       String
-  commentedPost Post   @relation(fields: [postId], references: [id])
+  commentedPost Post     @relation(fields: [postId], references: [id])
   postId        String
-  commentBy     User   @relation("commentByRelation", fields: [userId], references: [id])
+  commentBy     User     @relation("commentByRelation", fields: [userId], references: [id])
   userId        String
-  createdAt     DateTime  @default(now())
+  replys        Reply[]  @relation("relplyToRelation")
+  replyCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  reply     String
+  replyTo   Comment  @relation("relplyToRelation", fields: [commentId], references: [id])
+  commentId String
+  replyBy   User     @relation("replyByRelation", fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
 }

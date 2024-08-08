@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getComments = exports.getLikedPosts = exports.updateSaveOnAPost = exports.updateLikeOnAPost = exports.recentPosts = exports.addPost = exports.updatePost = exports.getPost = void 0;
+exports.getReply = exports.getComments = exports.getLikedPosts = exports.updateSaveOnAPost = exports.updateLikeOnAPost = exports.recentPosts = exports.addPost = exports.updatePost = exports.addComment = exports.addReply = exports.getPost = void 0;
 const __1 = require("..");
 const dataUri_1 = __importDefault(require("../middleware/dataUri"));
 const cloudinary_1 = __importDefault(require("../util/cloudinary"));
@@ -48,6 +48,7 @@ const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     select: {
                         id: true,
                         name: true,
+                        username: true,
                         profile: {
                             select: {
                                 id: true,
@@ -83,6 +84,106 @@ const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getPost = getPost;
+const addReply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { commentId, reply } = req.body;
+        const { id } = res.locals.jwtData;
+        const comment = yield __1.prisma.comment.findUnique({
+            where: { id: commentId },
+        });
+        if (comment) {
+            const replyObject = yield __1.prisma.reply.create({
+                data: {
+                    reply,
+                    commentId,
+                    userId: id,
+                },
+                include: {
+                    replyBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    profilePic: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+            yield __1.prisma.comment.update({
+                where: {
+                    id: commentId,
+                },
+                data: {
+                    replyCount: {
+                        increment: 1,
+                    },
+                },
+            });
+            return (0, helper_1.success)(res, { reply: replyObject });
+        }
+        else {
+            return (0, helper_1.unauthorizedError)(res, "unauthorized");
+        }
+    }
+    catch (error) {
+        return (0, helper_1.serverError)(res, error);
+    }
+});
+exports.addReply = addReply;
+const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = res.locals.jwtData;
+        const { postId, comment } = req.body;
+        const post = yield __1.prisma.post.findFirst({
+            where: {
+                id: postId,
+            },
+        });
+        if (!post) {
+            return (0, helper_1.unauthorizedError)(res, "unauthorized");
+        }
+        const savedComment = yield __1.prisma.comment.create({
+            data: {
+                comment: comment,
+                postId,
+                userId: id,
+            },
+            include: {
+                commentBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profile: {
+                            select: {
+                                id: true,
+                                profilePic: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        yield __1.prisma.post.update({
+            where: {
+                id: postId,
+            },
+            data: {
+                totalComments: {
+                    increment: 1,
+                },
+            },
+        });
+        return (0, helper_1.success)(res, { comment: savedComment });
+    }
+    catch (error) {
+        return (0, helper_1.serverError)(res, error);
+    }
+});
+exports.addComment = addComment;
 const updatePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = res.locals.jwtData;
@@ -124,6 +225,7 @@ const updatePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                         select: {
                             id: true,
                             name: true,
+                            username: true,
                             profile: {
                                 select: {
                                     id: true,
@@ -176,6 +278,7 @@ const updatePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                         select: {
                             id: true,
                             name: true,
+                            username: true,
                             profile: {
                                 select: {
                                     id: true,
@@ -251,6 +354,7 @@ const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                         select: {
                             id: true,
                             name: true,
+                            username: true,
                             profile: {
                                 select: {
                                     id: true,
@@ -294,6 +398,7 @@ const recentPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 postedBy: {
                     select: {
                         id: true,
+                        username: true,
                         name: true,
                         profile: {
                             select: {
@@ -490,21 +595,19 @@ exports.getLikedPosts = getLikedPosts;
 const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { postId } = req.params;
-        const comments = __1.prisma.comment.findMany({
+        const comments = yield __1.prisma.comment.findMany({
             where: {
                 postId,
             },
             orderBy: {
                 createdAt: "desc",
             },
-            take: 10,
-            select: {
-                id: true,
-                comment: true,
+            include: {
                 commentBy: {
                     select: {
                         id: true,
                         name: true,
+                        username: true,
                         profile: {
                             select: {
                                 id: true,
@@ -514,6 +617,7 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     },
                 },
             },
+            take: 10,
         });
         return (0, helper_1.success)(res, { comments });
     }
@@ -522,3 +626,43 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getComments = getComments;
+const getReply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { commentId } = req.params;
+        const comment = yield __1.prisma.comment.findUnique({
+            where: {
+                id: commentId,
+            },
+        });
+        if (comment) {
+            const replyObject = yield __1.prisma.reply.findMany({
+                where: {
+                    commentId,
+                },
+                include: {
+                    replyBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    profilePic: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                take: 10,
+            });
+            return (0, helper_1.success)(res, { reply: replyObject });
+        }
+        else {
+            return (0, helper_1.unauthorizedError)(res, "unauthorized");
+        }
+    }
+    catch (error) {
+        return (0, helper_1.serverError)(res, error);
+    }
+});
+exports.getReply = getReply;

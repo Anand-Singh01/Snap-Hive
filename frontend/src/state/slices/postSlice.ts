@@ -10,7 +10,7 @@ const initialState: IPostInitialState = {
   postsById: {},
   fetchPostStatus: "idle",
   createPostStatus: "idle",
-  updatePostStatus: "idle"
+  updatePostStatus: "idle",
 };
 
 const postSlice = createSlice({
@@ -34,6 +34,32 @@ const postSlice = createSlice({
             break;
         }
       }
+    },
+    updateCommentCount: (state, action) => {
+      const { postId, command } = action.payload;
+
+      const post = state.postsById[postId];
+      if (post) {
+        switch (command) {
+          case "add":
+            post.totalComments++;
+            break;
+          case "remove":
+            post.totalComments--;
+            break;
+          default:
+            break;
+        }
+      }
+
+      // const post = state.postsById[postId];
+      // if (post) {
+      //   if (command === "add") {
+      //     state.postsById[postId].totalComments++;
+      //   } else if (command === "remove") {
+      //     state.postsById[postId].totalComments--;
+      //   }
+      // }
     },
     resetPostState: () => initialState,
     resetPostStatus: (state, action) => {
@@ -70,14 +96,11 @@ const postSlice = createSlice({
     // Fetch Posts
     builder.addCase(fetchRecentPosts.fulfilled, (state, action) => {
       state.fetchPostStatus = "succeeded";
-      const {posts} = action.payload;
-      state.postsById = posts.reduce<Record<string, IPost>>(
-        (acc, post) => {
-          acc[post.id] = post;
-          return acc;
-        },
-        {}
-      );
+      const { posts } = action.payload;
+      state.postsById = posts.reduce<Record<string, IPost>>((acc, post) => {
+        acc[post.id] = post;
+        return acc;
+      }, {});
       // state.posts.push(...data.posts);
     });
     builder.addCase(fetchRecentPosts.pending, (state) => {
@@ -117,6 +140,11 @@ const postSlice = createSlice({
   },
 });
 
-export const { updateLike, updateSave, resetPostState, resetPostStatus } =
-  postSlice.actions;
+export const {
+  updateLike,
+  updateSave,
+  resetPostState,
+  resetPostStatus,
+  updateCommentCount,
+} = postSlice.actions;
 export default postSlice.reducer;

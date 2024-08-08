@@ -1,11 +1,16 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import {
+  IAddCommentResponse,
+  IAddReplyResponse,
+  ICommentRequest,
   ICreatePostData,
   ICreatePostResponse,
   IErrorResponse,
+  IFetchCommentsResponse,
   IFetchRecentPostPostResponse,
-  msgResponse
+  IReplyRequest,
+  msgResponse,
 } from "../constants/interfaces";
 
 export const fetchRecentPosts = createAsyncThunk<
@@ -30,7 +35,7 @@ export const fetchRecentPosts = createAsyncThunk<
 });
 
 export const likeAPost = createAsyncThunk<
-msgResponse,
+  msgResponse,
   { postId: string },
   { rejectValue: IErrorResponse }
 >("/post/LikeAPost", async ({ postId }, { rejectWithValue }) => {
@@ -51,7 +56,7 @@ msgResponse,
 });
 
 export const saveAPost = createAsyncThunk<
-msgResponse,
+  msgResponse,
   { postId: string },
   { rejectValue: IErrorResponse }
 >("/post/SaveAPost", async ({ postId }, { rejectWithValue }) => {
@@ -82,7 +87,7 @@ export const createPost = createAsyncThunk<
         "Content-Type": "multipart/form-data",
       },
     });
-    const data : ICreatePostResponse = await res.data.payload;
+    const data: ICreatePostResponse = await res.data.payload;
     return { ...data };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -108,6 +113,77 @@ export const updatePost = createAsyncThunk<
       },
     });
     const data: ICreatePostResponse = await res.data.payload;
+    return { ...data };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const responseError: IErrorResponse = {
+        error: error.response.data,
+        status: error.response.status,
+      };
+      return rejectWithValue(responseError);
+    }
+    throw error;
+  }
+});
+
+export const addComment = createAsyncThunk<
+  IAddCommentResponse,
+  ICommentRequest,
+  { rejectValue: IErrorResponse }
+>(`/post/add-comment`, async (payload, { rejectWithValue }) => {
+  try {
+    const res = await axios.post(
+      `/post/add-comment`,
+      { postId: payload.postId, comment: payload.comment },
+      {}
+    );
+    const data: IAddCommentResponse = await res.data.payload;
+    return { ...data };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const responseError: IErrorResponse = {
+        error: error.response.data,
+        status: error.response.status,
+      };
+      return rejectWithValue(responseError);
+    }
+    throw error;
+  }
+});
+
+export const addReply = createAsyncThunk<
+  IAddReplyResponse,
+  IReplyRequest,
+  { rejectValue: IErrorResponse }
+>(`/post/add-reply`, async (payload, { rejectWithValue }) => {
+  try {
+    const res = await axios.post(
+      `/post/add-reply`,
+      { reply: payload.reply, commentId: payload.commentId },
+      {}
+    );
+    const data: IAddReplyResponse = await res.data.payload;
+    return { ...data };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const responseError: IErrorResponse = {
+        error: error.response.data,
+        status: error.response.status,
+      };
+      return rejectWithValue(responseError);
+    }
+    throw error;
+  }
+});
+
+export const fetchAllComments = createAsyncThunk<
+  IFetchCommentsResponse,
+  { postId: string },
+  { rejectValue: IErrorResponse }
+>(`/post/fetchAll`, async (payload, { rejectWithValue }) => {
+  try {
+    const res = await axios.get(`post/get-comments/${payload.postId}`);
+    const data: IFetchCommentsResponse = await res.data.payload;
     return { ...data };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

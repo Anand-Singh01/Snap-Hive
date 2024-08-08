@@ -25,6 +25,7 @@ export const getPost = async (req: Request, res: Response) => {
           select: {
             id: true,
             name: true,
+            username: true,
             profile: {
               select: {
                 id: true,
@@ -58,6 +59,105 @@ export const getPost = async (req: Request, res: Response) => {
         isSaved: savedBy.length > 0,
       };
     }
+  } catch (error) {
+    return serverError(res, error);
+  }
+};
+
+export const addReply = async (req: Request, res: Response) => {
+  try {
+    const { commentId, reply } = req.body;
+    const { id } = res.locals.jwtData;
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+    });
+    if (comment) {
+      const replyObject = await prisma.reply.create({
+        data: {
+          reply,
+          commentId,
+          userId: id,
+        },
+        include: {
+          replyBy: {
+            select: {
+              id: true,
+              name: true,
+              profile: {
+                select: {
+                  id: true,
+                  profilePic: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      await prisma.comment.update({
+        where: {
+          id: commentId,
+        },
+        data: {
+          replyCount: {
+            increment: 1,
+          },
+        },
+      });
+      return success(res, { reply: replyObject });
+    } else {
+      return unauthorizedError(res, "unauthorized");
+    }
+  } catch (error) {
+    return serverError(res, error);
+  }
+};
+
+export const addComment = async (req: Request, res: Response) => {
+  try {
+    const { id } = res.locals.jwtData;
+    const { postId, comment } = req.body;
+    const post = await prisma.post.findFirst({
+      where: {
+        id: postId,
+      },
+    });
+    if (!post) {
+      return unauthorizedError(res, "unauthorized");
+    }
+
+    const savedComment = await prisma.comment.create({
+      data: {
+        comment: comment,
+        postId,
+        userId: id,
+      },
+      include: {
+        commentBy: {
+          select: {
+            id: true,
+            name: true,
+            profile: {
+              select: {
+                id: true,
+                profilePic: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        totalComments: {
+          increment: 1,
+        },
+      },
+    });
+    return success(res, { comment: savedComment });
   } catch (error) {
     return serverError(res, error);
   }
@@ -111,6 +211,7 @@ export const updatePost = async (req: Request, res: Response) => {
             select: {
               id: true,
               name: true,
+              username: true,
               profile: {
                 select: {
                   id: true,
@@ -167,6 +268,7 @@ export const updatePost = async (req: Request, res: Response) => {
             select: {
               id: true,
               name: true,
+              username: true,
               profile: {
                 select: {
                   id: true,
@@ -249,6 +351,7 @@ export const addPost = async (req: Request, res: Response) => {
             select: {
               id: true,
               name: true,
+              username: true,
               profile: {
                 select: {
                   id: true,
@@ -292,6 +395,7 @@ export const recentPosts = async (req: Request, res: Response) => {
         postedBy: {
           select: {
             id: true,
+            username: true,
             name: true,
             profile: {
               select: {
@@ -488,21 +592,19 @@ export const getComments = async (req: Request, res: Response) => {
   try {
     const { postId } = req.params;
 
-    const comments = prisma.comment.findMany({
+    const comments = await prisma.comment.findMany({
       where: {
         postId,
       },
       orderBy: {
         createdAt: "desc",
       },
-      take: 10,
-      select: {
-        id: true,
-        comment: true,
+      include: {
         commentBy: {
           select: {
             id: true,
             name: true,
+            username: true,
             profile: {
               select: {
                 id: true,
@@ -512,8 +614,47 @@ export const getComments = async (req: Request, res: Response) => {
           },
         },
       },
+      take: 10,
     });
     return success(res, { comments });
+  } catch (error) {
+    return serverError(res, error);
+  }
+};
+
+export const getReply = async (req: Request, res: Response) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await prisma.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+    });
+    if (comment) {
+      const replyObject = await prisma.reply.findMany({
+        where: {
+          commentId,
+        },
+        include: {
+          replyBy: {
+            select: {
+              id: true,
+              name: true,
+              profile: {
+                select: {
+                  id: true,
+                  profilePic: true,
+                },
+              },
+            },
+          },
+        },
+        take: 10,
+      });
+      return success(res, { reply: replyObject });
+    } else {
+      return unauthorizedError(res, "unauthorized");
+    }
   } catch (error) {
     return serverError(res, error);
   }

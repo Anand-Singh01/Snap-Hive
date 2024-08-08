@@ -39,7 +39,13 @@ const HomePage = () => {
         {status === "loading"
           ? [1, 2, 3, 4].map((_, index) => <PostSkeleton key={index} />)
           : Object.values(posts).map((post, index) => (
-              <PostCard index={index} key={post.id} post={post} />
+              <div
+                key={post.id}
+                className="w-[90%] sm:w-[50%] max-w-[350px] flex flex-col justify-center items-center"
+              >
+                <PostCard index={index} post={post} />
+                <hr className="w-full opacity-30 my-4" />
+              </div>
             ))}
       </div>
     </section>

@@ -65,6 +65,7 @@ export interface ILogoutResponse extends ICreatePostResponse {}
 export interface IPostedBy {
   id: string;
   name: string;
+  username: string;
   profile: {
     id: string;
     profilePic: string;
@@ -76,7 +77,20 @@ export interface ILikedBy extends IPostedBy {}
 export interface IComment {
   id: string;
   comment: string;
+  postId: string;
+  replyCount: number;
+  userId: string;
+  createdAt: string;
   commentBy: IPostedBy;
+}
+
+export interface IReply {
+  id: string;
+  reply: string;
+  commentId: string;
+  userId: string;
+  createdAt: string;
+  replyBy: IPostedBy;
 }
 
 export interface ISinglePost {
@@ -94,7 +108,7 @@ export interface IPostInitialState {
   fetchPostStatus: status;
   updatePostStatus: status;
   createPostStatus: status;
-  postsById: Record<string, IPost>
+  postsById: Record<string, IPost>;
 }
 
 export type status = "loading" | "succeeded" | "failed" | "idle";
@@ -106,24 +120,79 @@ export type status = "loading" | "succeeded" | "failed" | "idle";
 // }
 
 export interface IFetchRecentPostPostResponse {
-  posts: IPost[]
+  posts: IPost[];
 }
 
-export interface IPost extends ISinglePost{
-  postedBy:IPostedBy,
-  tags:ITag[]
+export interface IPost extends ISinglePost {
+  postedBy: IPostedBy;
+  tags: ITag[];
 }
 
-export interface ITag{
-  tagName:string
+export interface ITag {
+  tagName: string;
 }
 
-export interface IComment{
-  id:string,
-  comment:string,
-  commentedBy:IPostedBy
+// export interface IComment {
+//   id: string;
+//   comment: string;
+//   postId: string;
+//   replyCount: number;
+//   userId: string;
+//   createdAt: string;
+// }
+
+// export interface IReply {
+//   id: string;
+//   comment: string;
+//   postId: string;
+//   replyCount: number;
+//   userId: string;
+//   createdAt: string;
+// }
+
+export interface IAddCommentResponse {
+  comment: IComment;
 }
 
-export interface ICreatePostResponse{
-  post:IPost
+export interface IAddReplyResponse {
+  reply: IReply;
+}
+
+export interface IFetchCommentsResponse {
+  comments: IComment[];
+}
+
+export interface ICommentRequest {
+  comment: string;
+  postId: string;
+}
+
+export interface IReplyRequest {
+  reply: string;
+  commentId: string;
+}
+
+export interface ICommentSliceInitialState {
+  commentsById: Record<string, IComment[]>;
+  addCommentStatus: status;
+  fetchCommentStatus: status;
+}
+
+export interface IReplySliceInitialState {
+  replyById: Record<string, IReply[]>;
+  addReplyStatus: status;
+  fetchReplyStatus: status;
+}
+
+export interface ICreatePostResponse {
+  post: IPost;
+}
+
+export interface replyUnderProcessing {
+  mainCommentId: string;
+  replyToName: string;
+}
+
+export interface IUtilitySlice {
+  utilityReply: replyUnderProcessing | null;
 }

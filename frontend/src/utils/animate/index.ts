@@ -9,6 +9,7 @@ export const bounce = (className: string) => {
   });
 };
 
+
 export const scaleUpPost = (element: HTMLAnchorElement) => {
   gsap.to(element, {
     duration: 0.1,

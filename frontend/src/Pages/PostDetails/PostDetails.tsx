@@ -1,62 +1,56 @@
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
-import CardInfo from "../../components/PostCard/CardInfo";
+import { useEffect, useState } from "react";
+import { Navigate, useParams } from "react-router-dom";
+import CommentsList from "../../components/comment/CommentsList";
+import Loader from "../../components/Loader";
+import CommentInput from "../../components/PostCard/CommentInput";
 import LikePost from "../../components/PostCard/LikePost";
-import PostCaption_tag from "../../components/PostCard/PostCaption_tag";
 import SavePost from "../../components/PostCard/SavePost";
+import PostInfo from "../../components/PostInfo";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
+import { resetFetchCommentStatus } from "../../state/slices/commentSlice";
+import { fetchAllComments } from "../../utils/api-communicators/post";
 const PostDetails = () => {
   const { id } = useParams();
-
-  const [postId, setPostId] = useState<string | null>(id || null);
-  const dispatch = useAppDispatch();
+  const [postId] = useState<string | null>(id || null);
   const userId = useAppSelector((state) => state.user.user.userId);
-  const status = useAppSelector((state) => state.post.fetchPostStatus);
+  const dispatch = useAppDispatch();
   const post = useAppSelector((state) =>
     postId ? state.post.postsById[postId] : null
   );
 
+  const status = useAppSelector((state) => state.comment.fetchCommentStatus);
+  const comments = useAppSelector((state) => state.comment.commentsById[id!]);
+
+  useEffect(() => {
+    if (!comments) {
+      dispatch(fetchAllComments({ postId: id! }));
+    }
+  }, [dispatch, comments, id]);
+
+  useEffect(() => {
+    if (status === "succeeded" || status === "failed") {
+      dispatch(resetFetchCommentStatus());
+    }
+  }, [status, dispatch]);
+
+  if (status === "failed") {
+    return <p>Error loading comments. Please try again later.</p>;
+  }
+
   if (!post) {
     return <Navigate to={"/"} />;
   }
+
+
   return (
-    <div className="items-center w-fit mx-auto">
-      <div>
-        <div className="h-[300px] overflow-hidden relative">
-          <img
-            className="w-full h-full object-cover object-center"
-            src={post.postImage}
-            alt=""
-          />
-        </div>
-        <div className="p-[0.5rem] space-y-[1rem] rounded-lg">
-          <div className="flex items-center justify-between">
-            <CardInfo
-              profilePic={post.postedBy.profile.profilePic}
-              postLocation={post.location}
-              createdAt={post.createdAt}
-              postedBy={post.postedBy.name}
-            />
-            {userId === post.postedBy.id && (
-              <div className="flex items-center gap-3">
-                <Link to={`/update-post/${post.id}`} className="cursor-pointer">
-                  <EditOutlinedIcon sx={{ color: "#DBDBDB" }} />
-                </Link>
-                <Link to={`/update-post/${post.id}`} className="cursor-pointer">
-                  <DeleteForeverIcon sx={{ color: "#FD6991" }} />
-                </Link>
-              </div>
-            )}
-          </div>
-          <div>
-            <PostCaption_tag caption={post.caption} tags={post.tags} />
-          </div>
+    <div className="flex justify-center">
+      <div className="w-fit">
+        <PostInfo post={post} userId={userId} />
+        <div className="p-[0.5rem] space-y-[1rem] bg-[#111827]">
           <div>
             <div className="flex justify-between">
               <LikePost
-                totalLikes={post.totalLikes}
+                // totalLikes={post.totalLikes}
                 isLiked={post.isLiked}
                 postId={post.id}
               />
@@ -64,6 +58,21 @@ const PostDetails = () => {
             </div>
           </div>
         </div>
+        {!comments && (status === "loading" || status === "idle") ? (
+          <Loader />
+        ) : (
+          <div className="px-3 rounded-b-lg space-y-4 bg-gradient-to-b from-[#2b5ecb3f] to-[#07102457]">
+            <CommentInput
+              displayCommentOnTop={false}
+              name={post.postedBy.name}
+              postId={postId!}
+            />
+            <hr className="border-[#33436f]" />
+            <div className="overflow-y-scroll h-[150px]">
+              <CommentsList comments={comments} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
